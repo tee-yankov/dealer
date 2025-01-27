@@ -1,44 +1,20 @@
-enum Events {
-  Message = 'message',
-}
-class SignalingChannel {
-  private subscribers: Record<Events, any[]> = Object.fromEntries(Object.keys(Events).map((k) => [k as keyof typeof Events, []]))
+import fetchSTUNServerIPs from "./fetchSTUNServerIPs";
 
-  addEventListener(event: Events, callback: any) {
-    this.subscribers[event].push(callback);
+let peerConnection: RTCPeerConnection;
+
+export async function initializeWebRTC() {
+  if (peerConnection) {
+    return peerConnection;
   }
 
-  send(data: any) {
+  const stunServers = await fetchSTUNServerIPs();
+  const config = {
+    iceServers: [{ urls: `stun:${stunServers[0]}` }],
+  };
 
-  }
-}
+  console.log("WebRTC Peer Connection config:", config);
 
-// Set up an asynchronous communication channel that will be
-// used during the peer connection setup
-const signalingChannel = new SignalingChannel();
+  peerConnection = new RTCPeerConnection(config);
 
-// Send an asynchronous message to the remote client
-signalingChannel.send('Hello!');
-
-// signalingChannel.addEventListener('message', async (message) => {
-//     if (message.offer) {
-//         peerConnection.setRemoteDescription(new RTCSessionDescription(message.offer));
-//         const answer = await peerConnection.createAnswer();
-//         await peerConnection.setLocalDescription(answer);
-//         signalingChannel.send({'answer': answer});
-//     }
-// });
-
-export async function makeCall(stunServer: string) {
-  const configuration = { 'iceServers': [{ 'urls': stunServer }] }
-  const peerConnection = new RTCPeerConnection(configuration);
-  signalingChannel.addEventListener('message', async (message) => {
-    if (message.answer) {
-      const remoteDesc = new RTCSessionDescription(message.answer);
-      await peerConnection.setRemoteDescription(remoteDesc);
-    }
-  });
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
-  signalingChannel.send({ 'offer': offer });
+  return peerConnection
 }
