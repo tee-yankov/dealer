@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "firebase": "^11.2.0",
     "nes.css": "^2.3.0",
     "preact": "^10.25.3",
     "wouter-preact": "^3.4.0"

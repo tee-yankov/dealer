@@ -6,6 +6,7 @@ import Card, { CardRank } from "../components/card";
 import "./landing.css";
 import AnimateText from "../components/animate-text";
 import classnames from "../util/classnames";
+import { initialize } from "../util/firebase";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
@@ -38,11 +39,12 @@ function LandingPage() {
   );
 
   useEffect(() => {
-    initializeWebRTC().then(async (peerConnection) => {
-      await peerConnection.setLocalDescription();
+    initialize()
+    /* initializeWebRTC().then(async (peerConnection) => {
+*   await peerConnection.setLocalDescription();
 
-      setLocalDescription(peerConnection.localDescription);
-    });
+*   setLocalDescription(peerConnection.localDescription);
+* }); */
   }, [setLocalDescription]);
 
   const disabled = !roomName || !localDescription || isRoomCreating;
