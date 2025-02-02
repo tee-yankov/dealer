@@ -2,12 +2,23 @@ import { ChangeEvent } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import { initializeWebRTC } from "../util/webrtc";
+import { createRoomDirectory, getOwnPeerId, initialize } from "../util/ipfs";
+import Card, { CardRank } from "../components/card";
+import "./landing.css";
+import AnimateText from "../components/animate-text";
+import classnames from "../util/classnames";
+import { RoomDetails } from "../util/types";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
   const [localDescription, setLocalDescription] =
     useState<RTCSessionDescription | null>();
   const [_, navigate] = useLocation();
+  const [isRoomCreating, setIsRoomCreating] = useState(false);
+
+  useEffect(() => {
+    initialize();
+  }, []);
 
   const handleRoomNameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -17,18 +28,26 @@ function LandingPage() {
   );
 
   const handleSubmit = useCallback(
-    (e: SubmitEvent) => {
+    async (e: SubmitEvent) => {
       e.preventDefault();
-      const payload = btoa(
-        JSON.stringify({
-          roomName,
-          localDescription,
-        }),
-      );
+      if (isRoomCreating) {
+        return;
+      }
 
-      navigate(`/room/${payload}`);
+      setIsRoomCreating(true);
+
+      const payload: RoomDetails = {
+        name: roomName,
+        peerId: await getOwnPeerId(),
+      };
+
+      const roomDetailsSerialized = await createRoomDirectory(payload, { sdp: localDescription! });
+
+      setIsRoomCreating(false);
+
+      navigate(`/room/${roomDetailsSerialized}`);
     },
-    [roomName, localDescription, navigate],
+    [roomName, localDescription, navigate, isRoomCreating],
   );
 
   useEffect(() => {
@@ -39,24 +58,42 @@ function LandingPage() {
     });
   }, [setLocalDescription]);
 
-  const disabled = !roomName || !localDescription
+  const disabled = !roomName || !localDescription || isRoomCreating;
 
   return (
-    <div className="page">
-      <form onSubmit={handleSubmit}>
-        <h2>New Room</h2>
-        <input
-          name="roomName"
-          type="text"
-          value={roomName}
-          onChange={handleRoomNameChange}
-        />
-        <br />
-        <br />
-        <button disabled={disabled} type="submit">
-          Create
-        </button>
-      </form>
+    <div className="page page-landing">
+      <h1 className="title-text">Dealer</h1>
+      <div className="page-content">
+        <div className="card-logo-container">
+          <Card rank={CardRank.Ace} animate />
+        </div>
+        <form onSubmit={handleSubmit}>
+          <h2>New Room</h2>
+          <input
+            className="room-name-input nes-input"
+            name="roomName"
+            type="text"
+            value={roomName}
+            onChange={handleRoomNameChange}
+          />
+          {isRoomCreating && (
+            <p className="room-creating-text">
+              Creating Room
+              <AnimateText states={["", ".", "..", "..."]} />
+            </p>
+          )}
+          <button
+            className={classnames(
+              "room-create-button nes-btn",
+              disabled && "is-disabled",
+            )}
+            disabled={disabled}
+            type="submit"
+          >
+            Create
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import fetchSTUNServerIPs from "./fetchSTUNServerIPs";
+import { iceServers } from "./ice";
 
 let peerConnection: RTCPeerConnection;
 
@@ -7,9 +7,8 @@ export async function initializeWebRTC() {
     return peerConnection;
   }
 
-  const stunServers = await fetchSTUNServerIPs();
   const config = {
-    iceServers: [{ urls: `stun:${stunServers[0]}` }],
+    iceServers,
   };
 
   console.log("WebRTC Peer Connection config:", config);

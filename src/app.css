@@ -1,25 +1,53 @@
+@import url('https://fonts.cdnfonts.com/css/public-pixel');
+@import url("nes.css/css/nes.css");
+
+html,
+body {
+  font-family: "Public Pixel", sans-serif;
+  background: #333;
+  color: white;
+  image-rendering: pixelated;
+  width: 100%;
+  height: 100%;
+}
+
 #app {
+  width: 100%;
+  height: 100%;
+}
+
+.page {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
+  height: 100vh;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.preact:hover {
-  filter: drop-shadow(0 0 2em #673ab8aa);
+.card-logo-container {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
 }
 
-.card {
-  padding: 2em;
+.room-name-input {
+  margin-bottom: 2rem;;
 }
 
-.read-the-docs {
-  color: #888;
+.room-creating-text {
+  margin-bottom: 2rem;;
+}
+
+.room-create-button {
+  display: block;
+  margin: 0 auto;
+}
+
+.text-sm {
+  font-size: 0.6em;
 }

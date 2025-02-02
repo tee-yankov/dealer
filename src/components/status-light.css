@@ -1,0 +1,76 @@
+.status-light-container {
+    display: flex;
+    align-items: center;
+}
+
+.status-light {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    transition: all 0.5s ease-in-out;
+    margin-right: 0.5rem;
+}
+
+.status-light-info {
+    background-color: #6a8f95;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #339 0 -1px 9px,
+        #28f 0 0px 4px;
+}
+
+.status-light-info-glowing {
+    background-color: #4ab;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #006 0 -1px 9px,
+        #06f 0 0px 8px;
+}
+
+.status-light-good {
+    background-color: #5e8217;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #460 0 -1px 9px,
+        #7d0 0 0px 8px;
+}
+
+.status-light-good-glowing {
+    background-color: #690;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #460 0 -1px 9px,
+        #7d0 0 0px 8px;
+}
+
+.status-light-warning {
+    background-color: #a90;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #660 0 -1px 9px,
+        #dd0 0 0px 8px;
+}
+
+.status-light-warning-glowing {
+    background-color: #a90;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #660 0 -1px 9px,
+        #dd0 0 0px 8px;
+}
+
+.status-light-bad {
+    background-color: #940;
+    box-shadow:
+        #225 0 -1px 7px 1px,
+        inset #600 0 -1px 9px,
+        #f00 0 0px 8px;
+}
+
+.status-light-bad-glowing {
+    background-color: #c22;
+    box-shadow:
+        #338 0 -1px 7px 1px,
+        inset #600 0 -1px 9px,
+        #f00 0 0px 8px;
+}

@@ -1,0 +1,76 @@
+.card {
+    width: 142px;
+    height: 190px;
+    position: absolute;
+    padding: 0;
+    backface-visibility: hidden;
+    overflow: hidden;
+}
+
+.card-front {
+    background: url("../assets/8BitDeck.webp");
+    background-color: white;
+}
+
+.card-back {
+    background: url("../assets/Red_Deck.png");
+    transform: rotateY(180deg);
+}
+
+.card-container {
+    background-color: transparent;
+    width: 142px;
+    height: 190px;
+    perspective: 1000px;
+    transition: transform 0.4s ease-in-out;
+}
+
+.card-inner-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.8s;
+    text-align: center;
+    transform-style: preserve-3d;
+}
+
+.card-inner-container-animated {
+    animation: 3s linear 1s infinite running slowlyrotate;
+}
+
+@keyframes slowlyrotate {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(360deg);
+    }
+}
+.card-container:hover .card-inner-container {
+    animation-play-state: paused;
+}
+
+.card-pixel-corners {
+    clip-path: polygon(
+        0px calc(100% - 8px),
+        4px calc(100% - 8px),
+        4px calc(100% - 4px),
+        8px calc(100% - 4px),
+        8px 100%,
+        calc(100% - 8px) 100%,
+        calc(100% - 8px) calc(100% - 4px),
+        calc(100% - 4px) calc(100% - 4px),
+        calc(100% - 4px) calc(100% - 8px),
+        100% calc(100% - 8px),
+        100% 8px,
+        calc(100% - 4px) 8px,
+        calc(100% - 4px) 4px,
+        calc(100% - 8px) 4px,
+        calc(100% - 8px) 0px,
+        8px 0px,
+        8px 4px,
+        4px 4px,
+        4px 8px,
+        0px 8px
+    );
+}
