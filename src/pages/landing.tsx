@@ -2,12 +2,10 @@ import { ChangeEvent } from "preact/compat";
 import { useCallback, useEffect, useState } from "preact/hooks";
 import { useLocation } from "wouter-preact";
 import { initializeWebRTC } from "../util/webrtc";
-import { createRoomDirectory, getOwnPeerId, initialize } from "../util/ipfs";
 import Card, { CardRank } from "../components/card";
 import "./landing.css";
 import AnimateText from "../components/animate-text";
 import classnames from "../util/classnames";
-import { RoomDetails } from "../util/types";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
@@ -15,10 +13,6 @@ function LandingPage() {
     useState<RTCSessionDescription | null>();
   const [_, navigate] = useLocation();
   const [isRoomCreating, setIsRoomCreating] = useState(false);
-
-  useEffect(() => {
-    initialize();
-  }, []);
 
   const handleRoomNameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,16 +30,9 @@ function LandingPage() {
 
       setIsRoomCreating(true);
 
-      const payload: RoomDetails = {
-        name: roomName,
-        peerId: await getOwnPeerId(),
-      };
-
-      const roomDetailsSerialized = await createRoomDirectory(payload, { sdp: localDescription! });
-
       setIsRoomCreating(false);
 
-      navigate(`/room/${roomDetailsSerialized}`);
+      navigate(`/room/placeholder`);
     },
     [roomName, localDescription, navigate, isRoomCreating],
   );
