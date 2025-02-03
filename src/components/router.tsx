@@ -6,7 +6,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
-      <Route path="/room/:room" component={RoomPage} />
+      <Route path="/room/:roomId" component={RoomPage} />
     </Switch>
   );
 }

@@ -1,13 +1,10 @@
 export interface RoomDetails {
   name: string;
-  peerId: string;
+  uid: string;
 }
 
-export interface SerializedRoomKeys {
-  priv: string,
-  pub: string,
-}
-
-export interface PeerDetails {
+export interface RoomMember {
+  name: string;
   sdp: RTCSessionDescription;
+  iceCandidates?: RTCIceCandidate[] | RTCIceCandidateInit[];
 }

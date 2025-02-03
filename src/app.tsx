@@ -1,8 +1,13 @@
-import './app.css'
-import Router from './components/router'
+import "./app.css";
+import Router from "./components/router";
+import { initializeFirebase } from "./util/firebase";
+import { useAsync } from "./hooks/useAsync";
 
 export function App() {
-  return (
-    <Router />
-  )
+  const { isResolved } = useAsync(
+    () => initializeFirebase(),
+    { immediate: true },
+  );
+
+  return isResolved ? <Router /> : null;
 }

@@ -1,21 +1,35 @@
-import { PropsWithChildren } from "preact/compat";
+import { PropsWithChildren, useEffect, useRef } from "preact/compat";
 
-// TODO: Add title to props
+export type DialogProps = PropsWithChildren<{
+  title?: string;
+  isOpen?: boolean;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}>;
 
-function Dialog({ children }: PropsWithChildren) {
+function Dialog({ children, title, isOpen = false, onConfirm, onCancel }: DialogProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const openState = useRef(isOpen);
+
+  useEffect(() => {
+    if (openState.current !== isOpen) {
+      if (isOpen) {
+        dialogRef.current?.showModal();
+      } else {
+        dialogRef.current?.close();
+      }
+    }
+  }, [isOpen])
+
   return (
     <section>
-      <button type="button" class="nes-btn is-primary" onclick="document.getElementById('dialog-default').showModal();">
-        Open dialog
-      </button>
-      <dialog class="nes-dialog" id="dialog-default">
+      <dialog ref={dialogRef} class="nes-dialog">
         <form method="dialog">
-          <p class="title">Dialog</p>
+          {title && <p class="title">{title}</p>}
           {children}
-          <p>Alert: this is a dialog.</p>
           <menu class="dialog-menu">
-            <button class="nes-btn">Cancel</button>
-            <button class="nes-btn is-primary">Confirm</button>
+            <button onClick={onCancel} class="nes-btn">Cancel</button>
+            <button onClick={onConfirm} class="nes-btn is-primary">Confirm</button>
           </menu>
         </form>
       </dialog>

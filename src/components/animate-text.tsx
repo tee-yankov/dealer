@@ -25,4 +25,12 @@ function AnimateText({ states, tick = 330 }: AnimateTextProps) {
   return <span>{states[stateIndex]}</span>;
 }
 
+export function DotDotDot({ reverse = false }: { reverse?: boolean }) {
+  const states = ["", ".", "..", "..."];
+  if (reverse) {
+    states.reverse()
+  }
+  return <AnimateText states={states} / >
+}
+
 export default AnimateText;

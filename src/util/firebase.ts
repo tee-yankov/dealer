@@ -1,5 +1,24 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken } from "firebase/messaging";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDoc,
+  doc,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { getAuth, signInAnonymously } from "firebase/auth";
+import { authState, roomState, webRtcState } from "./state";
+import { RoomDetails, RoomMember } from "./types";
+
+export enum Collections {
+  Members = "members",
+  Rooms = "rooms",
+}
 
 const firebaseConfig = {
   apiKey: "AIzaSyAbx-DqBkDScQL2K2k0eloP5SFe8txaGtM",
@@ -7,16 +26,16 @@ const firebaseConfig = {
   projectId: "dealer-b7cfb",
   storageBucket: "dealer-b7cfb.firebasestorage.app",
   messagingSenderId: "90219296431",
-  appId: "1:90219296431:web:5ce5ccf602bf005a68465a"
+  appId: "1:90219296431:web:5ce5ccf602bf005a68465a",
 };
 
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-let token;
 let initialized = false;
 let initializing: Promise<void>;
-export async function initialize() {
+export async function initializeFirebase() {
   if (initialized) {
     return;
   }
@@ -24,26 +43,125 @@ export async function initialize() {
     return initializing;
   }
   let resolveCb;
-  initializing = new Promise((resolve) => { resolveCb = resolve; });
+  initializing = new Promise((resolve) => {
+    resolveCb = resolve;
+  });
 
-  token = await getToken(messaging, { vapidKey: "BFU6FxbWTIldPgMTRxI34CtE-r6Kmui4FyaEhTHr_qkvQQSlwf3CsHq0G-ivqgXprDoycnZhZo6jPgNFumUyV7s" });;
-
-  if (token) {
-    // Send the token to your server and update the UI if necessary
-  } else {
-    await requestPermission();
-    // Show permission request UI
-    console.log('No registration token available. Request permission to generate one.');
-  }
+  await signIn();
 
   initialized = true;
   resolveCb!();
 }
 
-async function requestPermission() {
-  console.log('Requesting permission...');
+export async function requestNotificationPermission() {
+  console.log("Requesting permission...");
   const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-    console.log('Notification permission granted.');
+  if (permission === "granted") {
+    console.log("Notification permission granted.");
   }
+}
+
+export async function createRoom(roomDetails: RoomDetails) {
+  const roomDocRef = await addDoc(
+    collection(db, Collections.Rooms),
+    roomDetails,
+  );
+
+  await createRoomMember(roomDocRef.id, {
+    name: authState.value.displayName,
+    sdp: webRtcState.value.localDescription?.toJSON(),
+  });
+
+  return roomDocRef.id;
+}
+
+export async function fetchRoom(roomId: string) {
+  const roomDocRef = await getDoc(doc(db, `/${Collections.Rooms}/${roomId}`));
+
+  const data = roomDocRef.data() as RoomDetails;
+
+  roomState.value = { ...roomState.value, room: data };
+
+  return data;
+}
+
+export async function getHostSdp(hostUid: string) {
+  const memberDocRef = await getDocs(
+    query(collection(db, Collections.Members), where("uid", "==", hostUid)),
+  );
+
+  const results: RoomMember[] = [];
+  memberDocRef.forEach((result) => {
+    results.push(result.data() as RoomMember);
+  });
+
+  return results[0]!;
+}
+
+export async function signIn() {
+  const { user } = await signInAnonymously(auth);
+
+  authState.value = {
+    ...authState.value,
+    user,
+  };
+}
+
+async function createRoomMember(roomId: string, roomMember: RoomMember) {
+  await setDoc(
+    doc(
+      db,
+      `/${Collections.Rooms}/${roomId}/${Collections.Members}/${authState.value.user?.uid!}`,
+    ),
+    {
+      ...roomMember,
+      sdp:
+        roomMember.sdp instanceof RTCSessionDescription
+          ? roomMember.sdp.toJSON()
+          : roomMember.sdp,
+    },
+  );
+
+  return authState.value.user?.uid!;
+}
+
+export async function fetchRoomMember(roomId: string, uid: string) {
+  console.log("Fetching room member", roomId, uid);
+  const memberDoc = await getDoc(
+    doc(db, `/${Collections.Rooms}/${roomId}/${Collections.Members}/${uid}`),
+  );
+
+  return memberDoc.data();
+}
+
+export async function publishOwnAnswer(
+  roomId: string,
+  sdp: RTCSessionDescriptionInit,
+) {
+  const roomMember = await fetchRoomMember(roomId, authState.value.user?.uid!);
+
+  if (!roomMember) {
+    await createRoomMember(roomId, {
+      name: authState.value.displayName,
+      sdp: new RTCSessionDescription(sdp),
+    });
+  }
+}
+
+export const getRoomMembersCollection = (roomId: string) =>
+  collection(db, Collections.Rooms, roomId, Collections.Members);
+
+export async function updateRoom(
+  roomId: string,
+  roomDetails: Partial<RoomDetails>,
+) {
+  return updateDoc(doc(db, Collections.Rooms, roomId), roomDetails);
+}
+
+export async function updateMember(
+  roomId: string,
+  memberId: string,
+  memberDetails: Partial<RoomMember>,
+) {
+  return updateDoc(doc(db, getRoomMembersCollection(roomId).path, memberId), memberDetails)
 }

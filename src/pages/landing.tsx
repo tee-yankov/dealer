@@ -1,19 +1,21 @@
 import { ChangeEvent } from "preact/compat";
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useState } from "preact/hooks";
 import { useLocation } from "wouter-preact";
-import { initializeWebRTC } from "../util/webrtc";
 import Card, { CardRank } from "../components/card";
 import "./landing.css";
-import AnimateText from "../components/animate-text";
+import { DotDotDot } from "../components/animate-text";
 import classnames from "../util/classnames";
-import { initialize } from "../util/firebase";
+import {
+  createRoom,
+} from "../util/firebase";
+import { authState } from "../util/state";
+import { initializeWebRTC, WebRTCMode } from "../util/webrtc";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
-  const [localDescription, setLocalDescription] =
-    useState<RTCSessionDescription | null>();
   const [_, navigate] = useLocation();
   const [isRoomCreating, setIsRoomCreating] = useState(false);
+  const disabled = !roomName || isRoomCreating;
 
   const handleRoomNameChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -25,29 +27,25 @@ function LandingPage() {
   const handleSubmit = useCallback(
     async (e: SubmitEvent) => {
       e.preventDefault();
-      if (isRoomCreating) {
+      if (disabled) {
         return;
       }
 
       setIsRoomCreating(true);
 
+      await initializeWebRTC(WebRTCMode.Server);
+
+      const roomId = await createRoom({
+        name: roomName,
+        uid: authState.value.user?.uid!,
+      });
+
       setIsRoomCreating(false);
 
-      navigate(`/room/placeholder`);
+      navigate(`/room/${roomId}`);
     },
-    [roomName, localDescription, navigate, isRoomCreating],
+    [roomName, navigate, isRoomCreating],
   );
-
-  useEffect(() => {
-    initialize()
-    /* initializeWebRTC().then(async (peerConnection) => {
-*   await peerConnection.setLocalDescription();
-
-*   setLocalDescription(peerConnection.localDescription);
-* }); */
-  }, [setLocalDescription]);
-
-  const disabled = !roomName || !localDescription || isRoomCreating;
 
   return (
     <div className="page page-landing">
@@ -68,7 +66,7 @@ function LandingPage() {
           {isRoomCreating && (
             <p className="room-creating-text">
               Creating Room
-              <AnimateText states={["", ".", "..", "..."]} />
+              <DotDotDot />
             </p>
           )}
           <button
