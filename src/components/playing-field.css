@@ -1,0 +1,15 @@
+.playing-field-container {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: 25%;
+}
+
+.playing-field-slot {
+    width: 164px;
+    height: 212px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
