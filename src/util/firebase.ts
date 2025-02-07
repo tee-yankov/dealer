@@ -67,11 +67,6 @@ export async function createRoom(roomDetails: RoomDetails) {
     roomDetails,
   );
 
-  await createRoomMember(roomDocRef.id, {
-    name: authState.value.displayName,
-    sdp: webRtcState.value.localDescription?.toJSON(),
-  });
-
   return roomDocRef.id;
 }
 
@@ -107,7 +102,7 @@ export async function signIn() {
   };
 }
 
-async function createRoomMember(roomId: string, roomMember: RoomMember) {
+export async function createRoomMember(roomId: string, roomMember: RoomMember) {
   await setDoc(
     doc(
       db,
@@ -138,14 +133,10 @@ export async function publishOwnAnswer(
   roomId: string,
   sdp: RTCSessionDescriptionInit,
 ) {
-  const roomMember = await fetchRoomMember(roomId, authState.value.user?.uid!);
-
-  if (!roomMember) {
-    await createRoomMember(roomId, {
-      name: authState.value.displayName,
-      sdp: new RTCSessionDescription(sdp),
-    });
-  }
+  await createRoomMember(roomId, {
+    name: authState.value.displayName,
+    sdp: new RTCSessionDescription(sdp),
+  });
 }
 
 export const getRoomMembersCollection = (roomId: string) =>
@@ -161,7 +152,12 @@ export async function updateRoom(
 export async function updateMember(
   roomId: string,
   memberId: string,
-  memberDetails: Partial<RoomMember>,
+  memberDetails: Partial<
+    Omit<RoomMember, "iceCandidates"> & { iceCandidates: RTCIceCandidateInit[] }
+  >,
 ) {
-  return updateDoc(doc(db, getRoomMembersCollection(roomId).path, memberId), memberDetails)
+  return updateDoc(
+    doc(db, getRoomMembersCollection(roomId).path, memberId),
+    memberDetails,
+  );
 }

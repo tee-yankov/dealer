@@ -16,20 +16,21 @@ export const authState = signal<{
 export const webRtcState = signal<{
   localDescription?: RTCSessionDescription | null;
   peers: Record<string, RTCPeerConnection>;
-}>({ peers: {} });
+  iceCandidates: RTCIceCandidate[];
+}>({ peers: {}, iceCandidates: [] });
 
 export const roomState = signal<{
   room?: RoomDetails;
-  members: RoomMember[];
+  members: Record<string, RoomMember>;
 }>({
-  members: [],
+  members: {},
 });
 
 export function updateState<T>(s: Signal<T>, updater: (s: T) => Partial<T>): T {
   s.value = {
     ...s.value,
     ...updater(s.value),
-  }
+  };
 
   return s.value;
 }

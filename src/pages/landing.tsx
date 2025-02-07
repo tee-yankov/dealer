@@ -5,9 +5,7 @@ import Card, { CardRank } from "../components/card";
 import "./landing.css";
 import { DotDotDot } from "../components/animate-text";
 import classnames from "../util/classnames";
-import {
-  createRoom,
-} from "../util/firebase";
+import { createRoom, createRoomMember } from "../util/firebase";
 import { authState } from "../util/state";
 import { initializeWebRTC, WebRTCMode } from "../util/webrtc";
 
@@ -33,11 +31,21 @@ function LandingPage() {
 
       setIsRoomCreating(true);
 
-      await initializeWebRTC(WebRTCMode.Server);
-
+      // create room
       const roomId = await createRoom({
         name: roomName,
         uid: authState.value.user?.uid!,
+      });
+
+      // initialize WebRTC
+      const peerConnection = await initializeWebRTC(WebRTCMode.Server, {
+        roomId,
+      });
+
+      // create host member record and provide offer
+      await createRoomMember(roomId, {
+        name: authState.value.displayName,
+        sdp: peerConnection.localDescription?.toJSON(),
       });
 
       setIsRoomCreating(false);

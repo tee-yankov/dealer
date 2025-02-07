@@ -6,8 +6,10 @@ import { fetchRoom } from "../util/firebase";
 import { DotDotDot } from "../components/animate-text";
 import { authState, roomState, updateState } from "../util/state";
 import {
+  addIceCandidates,
   initializeWebRTC,
   setRemoteDescription,
+  setRemoteDescriptionAndAnswer,
   WebRTCMode,
 } from "../util/webrtc";
 import { useAsync } from "../hooks/useAsync";
@@ -19,21 +21,22 @@ function RoomPage() {
   const { isResolved: isRoomResolved } = useAsync(() => fetchRoom(roomId!), {
     immediate: true,
   });
-  const { room } = roomState.value;
   const uid = authState.value.user?.uid;
+  const { room } = roomState.value;
   const amITheHost = uid === room?.uid;
-  const { invoke: handleRoom } = useAsync(async () => {
-    if (!isRoomResolved) {
-      return;
-    }
+  const { invoke: handleRoom, isFetching: isWebRtcInitialized } = useAsync(
+    async () => {
+      if (!isRoomResolved) {
+        return;
+      }
 
-    if (!amITheHost) {
-      await initializeWebRTC(WebRTCMode.Client, { uid: room!.uid, roomId });
-      await setRemoteDescription(roomId!, room!.uid);
-    } else {
-      await initializeWebRTC(WebRTCMode.Server, { roomId });
-    }
-  });
+      if (!amITheHost) {
+        await initializeWebRTC(WebRTCMode.Client, { uid: room!.uid, roomId: roomId! });
+      } else {
+        await initializeWebRTC(WebRTCMode.Server, { roomId: roomId! });
+      }
+    },
+  );
 
   useEffect(() => {
     if (isRoomResolved) {
@@ -42,12 +45,35 @@ function RoomPage() {
   }, [isRoomResolved]);
 
   useListenForRoomMembers(roomId!, (snapshot) => {
+    const { room } = roomState.value;
+    const members = snapshot.docs.reduce<Record<string, RoomMember>>(
+      (acc, v) => {
+        acc[v.id] = v.data() as RoomMember;
+        return acc;
+      },
+      {},
+    );
     updateState(roomState, () => ({
-      members: snapshot.docs.map((v) => v.data() as RoomMember),
+      members,
     }));
-  });
 
-  console.log(roomState.value.members);
+    for (const member of Object.entries(members)
+      .filter(([uid]) => uid !== authState.value.user?.uid)
+      .map(([, m]) => m)) {
+      console.log("Foreign member", member);
+      if (isWebRtcInitialized) {
+        setRemoteDescription(member.sdp);
+      }
+    }
+    console.log({ room, members });
+    if (room) {
+      const iceCandidates = Object.entries(members).flatMap(
+        ([id, candidate]) =>
+          authState.value.user?.uid === id ? [] : candidate.iceCandidates ?? [],
+      );
+      addIceCandidates(iceCandidates);
+    }
+  });
 
   return (
     <div className="page">
