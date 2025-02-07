@@ -35,6 +35,8 @@ export async function initializeWebRTC(
       console.log("send channel closed");
     });
   } else {
+    await publishOwnAnswer(roomId, null);
+
     peerConnection.addEventListener("datachannel", () => {
       console.log("data channel received");
     });
@@ -118,24 +120,27 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
       ([uid]) => uid !== authState.value.user?.uid && !currentMembers[uid],
     ),
   );
-  console.log("room members change", newRoomMembers);
+  console.log("room members change");
+  console.dir({ members, newRoomMembers, me: authState.value.user?.uid });
 
-  for (const member of Object.values(newRoomMembers)) {
+  updateState(roomState, (state) => ({
+    members: {
+      ...state.members,
+      ...newRoomMembers,
+    },
+  }));
+
+  for (const [uid, member] of Object.entries(newRoomMembers)) {
     if (webRtcState.value.mode === WebRTCMode.Server) {
       const offer = await peerConnection.createOffer();
       await setLocalDescription(offer);
-      await publishLocalOffer(offer);
+      await publishLocalOffer(offer, uid);
       console.log("Setting remote description", member.sdp);
-      if (member.sdp) {
-        await setRemoteDescription(member.sdp);
-      } else {
-        throw new Error("Remote member has no SDP");
-      }
     }
     if (member.sdp) {
       await setRemoteDescription(member.sdp);
     } else {
-      throw new Error("Remote member has no SDP");
+      console.warn("Remote member has no SDP");
     }
   }
 
@@ -146,19 +151,15 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
     );
     addIceCandidates(iceCandidates);
   }
-
-  updateState(roomState, (state) => ({
-    members: {
-      ...state.members,
-      ...newRoomMembers,
-    },
-  }));
 }
 
 async function setLocalDescription(description: RTCSessionDescriptionInit) {
   await peerConnection.setLocalDescription(description);
 }
 
-async function publishLocalOffer(description: RTCSessionDescriptionInit) {
+async function publishLocalOffer(
+  description: RTCSessionDescriptionInit,
+  memberUid: string,
+) {
   await publishOwnAnswer(roomState.value.roomId!, description);
 }

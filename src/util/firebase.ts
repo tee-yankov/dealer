@@ -10,6 +10,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import { authState, roomState } from "./state";
@@ -131,11 +132,13 @@ export async function fetchRoomMember(roomId: string, uid: string) {
 
 export async function publishOwnAnswer(
   roomId: string,
-  sdp: RTCSessionDescriptionInit,
+  sdp: RTCSessionDescriptionInit | null,
+  to: string,
 ) {
   await createRoomMember(roomId, {
     name: authState.value.displayName,
-    sdp: new RTCSessionDescription(sdp),
+    sdp: sdp ? new RTCSessionDescription(sdp) : null,
+    answers: arrayUnion(JSON.stringify({ to, description: sdp })),
   });
 }
 

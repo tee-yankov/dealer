@@ -34,6 +34,10 @@
     transform-style: preserve-3d;
 }
 
+.card-inner-container-flipped {
+    transform: rotateY(180deg);
+}
+
 .card-inner-container-animated {
     animation: 3s linear 1s infinite running slowlyrotate;
 }

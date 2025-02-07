@@ -13,3 +13,9 @@
     justify-content: center;
     align-items: center;
 }
+
+.playing-field-flip-btn {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+}

@@ -1,25 +1,32 @@
-import Card, { CardRank } from "./card";
+import { useState } from "preact/hooks";
+import Card from "./card";
 import "./playing-field.css";
 
 function PlayingField() {
   const slots = 6;
+  const [flipped, setFlipped] = useState(true);
+  const cardRanks = new Array(slots)
+    .fill(0)
+    .map(() => ({ rank: Math.round(Math.random() * 13) }));
 
   return (
-    <div className="playing-field-container">
-      {new Array(slots).fill(0).map((_, i) => (
-        <div key={i} className="nes-container is-rounded playing-field-slot">
-          <div className="playing-field-slot-content">
-            <Card
-              rank={
-                CardRank[
-                  Object.values(CardRank)[i] as CardRank
-                ] as unknown as CardRank
-              }
-            />
+    <>
+      <button
+        className="nes-btn playing-field-flip-btn"
+        onClick={() => setFlipped(!flipped)}
+      >
+        Flip
+      </button>
+      <div className="playing-field-container">
+        {cardRanks.map(({ rank }, i) => (
+          <div key={i} className="nes-container is-rounded playing-field-slot">
+            <div className="playing-field-slot-content">
+              <Card flipped={flipped} rank={rank} />
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }
 

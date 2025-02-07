@@ -6,13 +6,13 @@ const xOffset = 142;
 /* const yOffset = 190; */
 
 const getRandomDifferentCard = (old: number) => {
-  const result = Math.round(Math.random() * 13)
+  const result = Math.round(Math.random() * 13);
   if (result !== old) {
-    return result
+    return result;
   } else {
-    return getRandomDifferentCard(old)
+    return getRandomDifferentCard(old);
   }
-}
+};
 
 export enum CardRank {
   Ace = 12,
@@ -35,9 +35,16 @@ export interface CardProps {
   animate?: boolean;
   onClick?: (rank: CardRank) => void;
   className?: string;
+  flipped?: boolean;
 }
 
-function Card({ rank, animate = false, onClick, className }: CardProps) {
+function Card({
+  rank,
+  animate = false,
+  onClick,
+  className,
+  flipped = false,
+}: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
   const [cardContainer, setCardContainer] = useState<HTMLDivElement | null>(
     null,
@@ -80,13 +87,23 @@ function Card({ rank, animate = false, onClick, className }: CardProps) {
 
   const handleClick = useCallback(() => {
     if (onClick) {
-      onClick(rank)
+      onClick(rank);
     }
-  }, [rank, onClick])
+  }, [rank, onClick]);
 
   return (
-    <div onClick={handleClick} className={classnames("card-container", className)}>
-      <div ref={cardRef} className={classnames("card-inner-container", animate && "card-inner-container-animated")}>
+    <div
+      onClick={handleClick}
+      className={classnames("card-container", className)}
+    >
+      <div
+        ref={cardRef}
+        className={classnames(
+          "card-inner-container",
+          flipped && "card-inner-container-flipped",
+          animate && "card-inner-container-animated",
+        )}
+      >
         <div
           className="card card-front card-pixel-corners"
           style={{ backgroundPositionX: -cardIndex * xOffset }}
