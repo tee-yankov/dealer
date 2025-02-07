@@ -38,14 +38,14 @@ function LandingPage() {
       });
 
       // initialize WebRTC
-      const peerConnection = await initializeWebRTC(WebRTCMode.Server, {
+      await initializeWebRTC(WebRTCMode.Server, {
         roomId,
       });
 
       // create host member record and provide offer
       await createRoomMember(roomId, {
         name: authState.value.displayName,
-        sdp: peerConnection.localDescription?.toJSON(),
+        sdp: null,
       });
 
       setIsRoomCreating(false);

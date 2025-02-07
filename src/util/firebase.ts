@@ -12,7 +12,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { authState, roomState, webRtcState } from "./state";
+import { authState, roomState } from "./state";
 import { RoomDetails, RoomMember } from "./types";
 
 export enum Collections {
@@ -75,7 +75,7 @@ export async function fetchRoom(roomId: string) {
 
   const data = roomDocRef.data() as RoomDetails;
 
-  roomState.value = { ...roomState.value, room: data };
+  roomState.value = { ...roomState.value, room: data, roomId };
 
   return data;
 }

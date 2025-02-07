@@ -5,6 +5,6 @@ export interface RoomDetails {
 
 export interface RoomMember {
   name: string;
-  sdp: RTCSessionDescription;
+  sdp: RTCSessionDescriptionInit | null;
   iceCandidates?: RTCIceCandidate[];
 }
