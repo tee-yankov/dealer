@@ -42,12 +42,6 @@ function LandingPage() {
         roomId,
       });
 
-      // create host member record and provide offer
-      await createRoomMember(roomId, {
-        name: authState.value.displayName,
-        sdp: null,
-      });
-
       setIsRoomCreating(false);
 
       navigate(`/room/${roomId}`);

@@ -68,6 +68,13 @@ export async function createRoom(roomDetails: RoomDetails) {
     roomDetails,
   );
 
+  // create host member record and provide offer
+  await createRoomMember(roomDocRef.id, {
+    name: authState.value.displayName,
+    sdp: null,
+    answers: {},
+  });
+
   return roomDocRef.id;
 }
 
@@ -147,8 +154,6 @@ export async function publishOwnAnswer(
       ...existingMember.data().answers,
       [to]: sdp,
     };
-
-    console.log({ newAnswers });
 
     transaction.update(ownKey, {
       answers: newAnswers,

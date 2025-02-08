@@ -39,11 +39,6 @@ export async function initializeWebRTC(
     sendChannel.addEventListener("close", () => {
       console.log("send channel closed");
     });
-    await createRoomMember(roomId, {
-      name: authState.value.displayName,
-      sdp: null,
-      answers: {},
-    });
   } else {
     await createRoomMember(roomId, {
       name: authState.value.displayName,
@@ -94,9 +89,9 @@ export async function setRemoteDescriptionAndAnswer(
   hostUid: string,
 ) {
   const hostMember = (await fetchRoomMember(roomId, hostUid))!;
-  console.log("Set remote description", hostMember.sdp);
 
-  await peerConnection.setRemoteDescription(hostMember.sdp);
+  const sdp = hostMember.answers[authState.value.user!.uid];
+  await peerConnection.setRemoteDescription(sdp);
   const answer = await peerConnection.createAnswer();
   await peerConnection.setLocalDescription(answer);
   await publishOwnAnswer(roomId, answer, hostUid);
@@ -124,18 +119,29 @@ export async function addIceCandidates(candidates: RTCIceCandidate[]) {
 }
 
 export async function handleRoomMember(snapshot: QuerySnapshot) {
-  const { room, members: currentMembers } = roomState.value;
-  const members = snapshot.docs.reduce<Record<string, RoomMember>>((acc, v) => {
-    acc[v.id] = v.data() as RoomMember;
-    return acc;
-  }, {});
+  const { room, members: currentMembers, roomId } = roomState.value;
+  const ownUid = authState.value.user!.uid;
+  const allMembers = snapshot.docs.reduce<Record<string, RoomMember>>(
+    (acc, v) => {
+      acc[v.id] = v.data() as RoomMember;
+      return acc;
+    },
+    {},
+  );
+  const newHostAnswer =
+    allMembers[room!.uid]?.answers?.[ownUid!]?.sdp !==
+    currentMembers[ownUid]?.sdp?.sdp;
   const newRoomMembers = Object.fromEntries(
-    Object.entries(members).filter(
-      ([uid]) => uid !== authState.value.user?.uid && !currentMembers[uid],
+    Object.entries(allMembers).filter(
+      ([uid]) => uid !== ownUid && !currentMembers[uid],
     ),
   );
   console.log("room members change");
-  console.dir({ members, newRoomMembers, me: authState.value.user?.uid });
+  console.dir({
+    members: allMembers,
+    newRoomMembers,
+    me: authState.value.user?.uid,
+  });
 
   updateState(roomState, (state) => ({
     members: {
@@ -151,20 +157,17 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
       await publishLocalOffer(offer, uid);
       console.log("Setting remote description", member.sdp);
     }
-    if (member.sdp) {
-      await setRemoteDescription(member.sdp);
-    } else {
-      console.warn("Remote member has no SDP");
-    }
   }
 
-  if (room) {
-    const iceCandidates = Object.entries(newRoomMembers).flatMap(
-      ([id, candidate]) =>
-        authState.value.user?.uid === id ? [] : (candidate.iceCandidates ?? []),
-    );
-    addIceCandidates(iceCandidates);
+  if (newHostAnswer) {
+    await setRemoteDescriptionAndAnswer(roomId!, room!.uid);
   }
+
+  const iceCandidates = Object.entries(newRoomMembers).flatMap(
+    ([id, candidate]) =>
+      authState.value.user?.uid === id ? [] : (candidate.iceCandidates ?? []),
+  );
+  addIceCandidates(iceCandidates);
 }
 
 async function setLocalDescription(description: RTCSessionDescriptionInit) {
