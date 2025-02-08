@@ -10,7 +10,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  arrayUnion,
+  runTransaction,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
 import { authState, roomState } from "./state";
@@ -135,15 +135,32 @@ export async function publishOwnAnswer(
   sdp: RTCSessionDescriptionInit | null,
   to: string,
 ) {
-  await createRoomMember(roomId, {
-    name: authState.value.displayName,
-    sdp: sdp ? new RTCSessionDescription(sdp) : null,
-    answers: arrayUnion(JSON.stringify({ to, description: sdp })),
+  await runTransaction(db, async (transaction) => {
+    const ownUid = authState.value.user!.uid;
+    const ownKey = getRoomMemberKey(roomId, ownUid);
+    const existingMember = await transaction.get(ownKey);
+    if (!existingMember.exists()) {
+      throw new Error("Own member record does not exist");
+    }
+
+    const newAnswers = {
+      ...existingMember.data().answers,
+      [to]: sdp,
+    };
+
+    console.log({ newAnswers });
+
+    transaction.update(ownKey, {
+      answers: newAnswers,
+    });
   });
 }
 
 export const getRoomMembersCollection = (roomId: string) =>
   collection(db, Collections.Rooms, roomId, Collections.Members);
+
+export const getRoomMemberKey = (roomId: string, memberId: string) =>
+  doc(db, `${getRoomMembersCollection(roomId).path}/${memberId}`);
 
 export async function updateRoom(
   roomId: string,

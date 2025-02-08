@@ -1,6 +1,11 @@
 import { QuerySnapshot } from "firebase/firestore";
 import debounce from "./debounce";
-import { fetchRoomMember, publishOwnAnswer, updateMember } from "./firebase";
+import {
+  createRoomMember,
+  fetchRoomMember,
+  publishOwnAnswer,
+  updateMember,
+} from "./firebase";
 import { iceServers } from "./ice";
 import { authState, roomState, updateState, webRtcState } from "./state";
 import { RoomMember } from "./types";
@@ -34,8 +39,17 @@ export async function initializeWebRTC(
     sendChannel.addEventListener("close", () => {
       console.log("send channel closed");
     });
+    await createRoomMember(roomId, {
+      name: authState.value.displayName,
+      sdp: null,
+      answers: {},
+    });
   } else {
-    await publishOwnAnswer(roomId, null);
+    await createRoomMember(roomId, {
+      name: authState.value.displayName,
+      sdp: null,
+      answers: {},
+    });
 
     peerConnection.addEventListener("datachannel", () => {
       console.log("data channel received");
@@ -85,7 +99,7 @@ export async function setRemoteDescriptionAndAnswer(
   await peerConnection.setRemoteDescription(hostMember.sdp);
   const answer = await peerConnection.createAnswer();
   await peerConnection.setLocalDescription(answer);
-  await publishOwnAnswer(roomId, answer);
+  await publishOwnAnswer(roomId, answer, hostUid);
 
   return answer;
 }
@@ -161,5 +175,5 @@ async function publishLocalOffer(
   description: RTCSessionDescriptionInit,
   memberUid: string,
 ) {
-  await publishOwnAnswer(roomState.value.roomId!, description);
+  await publishOwnAnswer(roomState.value.roomId!, description, memberUid);
 }
