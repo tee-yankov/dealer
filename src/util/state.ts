@@ -29,6 +29,10 @@ export const roomState = signal<{
   members: {},
 });
 
+export const signallingState = signal<{
+  seenMessages: Record<string, Set<string>>;
+}>({ seenMessages: {} });
+
 export function updateState<T>(s: Signal<T>, updater: (s: T) => Partial<T>): T {
   s.value = {
     ...s.value,

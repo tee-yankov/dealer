@@ -50,7 +50,7 @@ function RoomPage() {
         glowing
         text={<span className="nes-text is-success text-sm">Connected</span>}
       />
-      <Link to="/">Exit</Link>
+      <Link to="/">Back</Link>
       <h2>Room: {room?.name || <DotDotDot reverse />}</h2>
       <PlayingField />
       <Hand />

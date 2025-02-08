@@ -71,7 +71,6 @@ export async function createRoom(roomDetails: RoomDetails) {
   // create host member record and provide offer
   await createRoomMember(roomDocRef.id, {
     name: authState.value.displayName,
-    sdp: null,
     answers: {},
   });
 
@@ -116,13 +115,7 @@ export async function createRoomMember(roomId: string, roomMember: RoomMember) {
       db,
       `/${Collections.Rooms}/${roomId}/${Collections.Members}/${authState.value.user?.uid!}`,
     ),
-    {
-      ...roomMember,
-      sdp:
-        roomMember.sdp instanceof RTCSessionDescription
-          ? roomMember.sdp.toJSON()
-          : roomMember.sdp,
-    },
+    roomMember,
   );
 
   return authState.value.user?.uid!;

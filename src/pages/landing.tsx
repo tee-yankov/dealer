@@ -5,9 +5,8 @@ import Card, { CardRank } from "../components/card";
 import "./landing.css";
 import { DotDotDot } from "../components/animate-text";
 import classnames from "../util/classnames";
-import { createRoom, createRoomMember } from "../util/firebase";
+import { createRoom } from "../util/firebase";
 import { authState } from "../util/state";
-import { initializeWebRTC, WebRTCMode } from "../util/webrtc";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
@@ -35,11 +34,6 @@ function LandingPage() {
       const roomId = await createRoom({
         name: roomName,
         uid: authState.value.user?.uid!,
-      });
-
-      // initialize WebRTC
-      await initializeWebRTC(WebRTCMode.Server, {
-        roomId,
       });
 
       setIsRoomCreating(false);

@@ -7,11 +7,15 @@ import {
   updateMember,
 } from "./firebase";
 import { iceServers } from "./ice";
-import { authState, roomState, updateState, webRtcState } from "./state";
+import {
+  authState,
+  roomState,
+  signallingState,
+  updateState,
+  webRtcState,
+} from "./state";
 import { RoomMember } from "./types";
-
-let peerConnection: RTCPeerConnection;
-let sendChannel: RTCDataChannel;
+import { selectPeerConnection } from "./selectors";
 
 export enum WebRTCMode {
   Server = "server",
@@ -22,33 +26,39 @@ export async function initializeWebRTC(
   mode: WebRTCMode,
   { roomId, uid }: { roomId: string; uid?: string },
 ) {
-  if (peerConnection) {
-    return peerConnection;
-  }
-
   console.log(`Starting WebRTC in ${mode} mode`);
-  peerConnection = new RTCPeerConnection({ iceServers });
+  const peerConnection = new RTCPeerConnection({ iceServers });
 
   if (mode === WebRTCMode.Server) {
-    sendChannel = peerConnection.createDataChannel("sendChannel");
+    const sendChannel = peerConnection.createDataChannel("sendChannel");
 
-    sendChannel.addEventListener("open", () => {
+    sendChannel.onopen = () => {
       console.log("send channel open");
-    });
-
-    sendChannel.addEventListener("close", () => {
+    };
+    sendChannel.onclose = () => {
       console.log("send channel closed");
-    });
+    };
+
+    peerConnection.onnegotiationneeded = async () => {
+      console.log("negotiation needed");
+      await peerConnection.setLocalDescription(
+        await peerConnection.createOffer(),
+      );
+      await publishOwnAnswer(
+        roomId,
+        peerConnection.localDescription!.toJSON(),
+        uid!,
+      );
+    };
   } else {
     await createRoomMember(roomId, {
       name: authState.value.displayName,
-      sdp: null,
       answers: {},
     });
 
-    peerConnection.addEventListener("datachannel", () => {
+    peerConnection.ondatachannel = () => {
       console.log("data channel received");
-    });
+    };
   }
 
   const iceCandidates: RTCIceCandidate[] = [];
@@ -62,13 +72,13 @@ export async function initializeWebRTC(
     }
   }, 1000);
 
-  peerConnection.addEventListener("icecandidate", (e) => {
+  peerConnection.onicecandidate = (e) => {
     console.log("ice candidate");
     if (e.candidate?.candidate) {
       iceCandidates.push(e.candidate);
       flushIceCandidates();
     }
-  });
+  };
 
   updateState(webRtcState, (state) => ({
     mode,
@@ -87,7 +97,10 @@ export async function initializeWebRTC(
 export async function setRemoteDescriptionAndAnswer(
   roomId: string,
   hostUid: string,
+  remotePeerUid: string,
 ) {
+  const peerConnection = selectPeerConnection(remotePeerUid);
+
   const hostMember = (await fetchRoomMember(roomId, hostUid))!;
 
   const sdp = hostMember.answers[authState.value.user!.uid];
@@ -99,11 +112,19 @@ export async function setRemoteDescriptionAndAnswer(
   return answer;
 }
 
-export async function setRemoteDescription(sdp: RTCSessionDescriptionInit) {
+export async function setRemoteDescription(
+  sdp: RTCSessionDescriptionInit,
+  remotePeerUid: string,
+) {
+  const peerConnection = selectPeerConnection(remotePeerUid);
   await peerConnection.setRemoteDescription(sdp);
 }
 
-export async function addIceCandidates(candidates: RTCIceCandidate[]) {
+export async function addIceCandidates(
+  candidates: RTCIceCandidate[],
+  remotePeerUid: string,
+) {
+  const peerConnection = selectPeerConnection(remotePeerUid);
   for (const candidate of candidates) {
     const existingCandidate = !webRtcState.value.iceCandidates.find(
       (c) => candidate.candidate === c.candidate,
@@ -120,7 +141,7 @@ export async function addIceCandidates(candidates: RTCIceCandidate[]) {
 
 export async function handleRoomMember(snapshot: QuerySnapshot) {
   const { room, members: currentMembers, roomId } = roomState.value;
-  const ownUid = authState.value.user!.uid;
+  const { mode } = webRtcState.value;
   const allMembers = snapshot.docs.reduce<Record<string, RoomMember>>(
     (acc, v) => {
       acc[v.id] = v.data() as RoomMember;
@@ -128,9 +149,20 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
     },
     {},
   );
-  const newHostAnswer =
-    allMembers[room!.uid]?.answers?.[ownUid!]?.sdp !==
-    currentMembers[ownUid]?.sdp?.sdp;
+  console.log("all members", allMembers);
+  const ownUid = authState.value.user!.uid;
+  const hostUid = room!.uid;
+  const messages = currentMembers[hostUid]?.answers[ownUid] ?? [];
+  // check which messages are new
+  const newMessages = messages.filter(
+    (message) =>
+      !signallingState.value.seenMessages[hostUid].has(JSON.stringify(message)),
+  );
+
+  for (const message of newMessages) {
+    console.log("received message", message);
+  }
+
   const newRoomMembers = Object.fromEntries(
     Object.entries(allMembers).filter(
       ([uid]) => uid !== ownUid && !currentMembers[uid],
@@ -150,27 +182,29 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
     },
   }));
 
-  for (const [uid, member] of Object.entries(newRoomMembers)) {
-    if (webRtcState.value.mode === WebRTCMode.Server) {
-      const offer = await peerConnection.createOffer();
-      await setLocalDescription(offer);
-      await publishLocalOffer(offer, uid);
-      console.log("Setting remote description", member.sdp);
+  if (mode === WebRTCMode.Server) {
+    for (const [uid, member] of Object.entries(newRoomMembers)) {
+      const peerConnection = await initializeWebRTC(WebRTCMode.Server, {
+        uid,
+        roomId: roomId!,
+      });
     }
   }
-
-  if (newHostAnswer) {
-    await setRemoteDescriptionAndAnswer(roomId!, room!.uid);
-  }
-
-  const iceCandidates = Object.entries(newRoomMembers).flatMap(
-    ([id, candidate]) =>
-      authState.value.user?.uid === id ? [] : (candidate.iceCandidates ?? []),
-  );
-  addIceCandidates(iceCandidates);
+  // const peerConnection = selectPeerConnection(uid);
+  // const iceCandidates = member.iceCandidates ?? [];
+  // await addIceCandidates(iceCandidates, uid);
+  // if (webRtcState.value.mode === WebRTCMode.Server) {
+  //   const offer = await peerConnection.createOffer();
+  //   await setLocalDescription(offer, uid);
+  //   await publishLocalOffer(offer, uid);
+  // }
 }
 
-async function setLocalDescription(description: RTCSessionDescriptionInit) {
+async function setLocalDescription(
+  description: RTCSessionDescriptionInit,
+  remotePeerUid: string,
+) {
+  const peerConnection = selectPeerConnection(remotePeerUid);
   await peerConnection.setLocalDescription(description);
 }
 
