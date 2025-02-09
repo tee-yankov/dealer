@@ -11,9 +11,10 @@ import {
   setDoc,
   updateDoc,
   runTransaction,
+  QuerySnapshot,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously } from "firebase/auth";
-import { authState, roomState } from "./state";
+import { authState, roomState, updateState } from "./state";
 import { RoomDetails, RoomMember } from "./types";
 
 export enum Collections {
@@ -71,7 +72,6 @@ export async function createRoom(roomDetails: RoomDetails) {
   // create host member record and provide offer
   await createRoomMember(roomDocRef.id, {
     name: authState.value.displayName,
-    answers: {},
   });
 
   return roomDocRef.id;
@@ -178,4 +178,18 @@ export async function updateMember(
     doc(db, getRoomMembersCollection(roomId).path, memberId),
     memberDetails,
   );
+}
+
+export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
+  for (const change of snapshot.docChanges()) {
+    console.log(change.type, change.doc.id, change.doc.data());
+  }
+
+  updateState(roomState, () => ({
+    members: Object.fromEntries(
+      snapshot.docs.map((v) => [v.id, v.data() as RoomMember]),
+    ),
+  }));
+
+  console.log(roomState.value.members);
 }

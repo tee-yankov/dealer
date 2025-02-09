@@ -2,41 +2,30 @@ import { Link, useParams } from "wouter-preact";
 import Hand from "../components/hand";
 import StatusLight, { StatusLightStates } from "../components/status-light";
 import { useEffect } from "preact/hooks";
-import { createRoomMember, fetchRoom } from "../util/firebase";
-import { DotDotDot } from "../components/animate-text";
-import { authState, roomState } from "../util/state";
 import {
-  handleRoomMember,
-  handleRoomMemberChanges,
-  initializeWebRTC,
-  WebRTCMode,
-} from "../util/webrtc";
+  createRoomMember,
+  fetchRoom,
+  handleRoomMembersChange,
+} from "../util/firebase";
+import { DotDotDot } from "../components/animate-text";
+import { authState, isRoomHost, roomState } from "../util/state";
 import { useAsync } from "../hooks/useAsync";
-import useListenForRoomMembers from "../hooks/useListenForRoomMembers";
 import PlayingField from "../components/playing-field";
-import { setLocalWebRTCMode } from "../util/actions";
+import useListenForRoomMembers from "../hooks/useListenForRoomMembers";
 
 function RoomPage() {
   const { roomId } = useParams();
   const { isResolved: isRoomResolved } = useAsync(() => fetchRoom(roomId!), {
     immediate: true,
   });
-  const uid = authState.value.user?.uid;
   const { room } = roomState.value;
-  const { invoke: handleRoom, isResolved: isWebRtcInitialized } = useAsync(
-    async () => {
-      const amITheHost = uid === room?.uid;
-
-      if (!amITheHost) {
-        await createRoomMember(roomId!, {
-          name: authState.value.displayName,
-          answers: {},
-        });
-      }
-
-      setLocalWebRTCMode(amITheHost ? WebRTCMode.Server : WebRTCMode.Client);
-    },
-  );
+  const { invoke: handleRoom } = useAsync(async () => {
+    if (!isRoomHost.value) {
+      await createRoomMember(roomId!, {
+        name: authState.value.displayName,
+      });
+    }
+  });
 
   useEffect(() => {
     if (isRoomResolved) {
@@ -44,11 +33,7 @@ function RoomPage() {
     }
   }, [isRoomResolved]);
 
-  useListenForRoomMembers(
-    roomId!,
-    handleRoomMemberChanges,
-    isWebRtcInitialized,
-  );
+  useListenForRoomMembers(roomId!, handleRoomMembersChange, isRoomResolved);
 
   return (
     <div className="page">

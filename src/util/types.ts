@@ -5,6 +5,4 @@ export interface RoomDetails {
 
 export interface RoomMember {
   name: string;
-  iceCandidates?: RTCIceCandidate[];
-  answers: Record<string, RTCSessionDescriptionInit>;
 }

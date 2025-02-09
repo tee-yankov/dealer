@@ -1,7 +1,6 @@
-import { Signal, signal } from "@preact/signals";
+import { computed, Signal, signal } from "@preact/signals";
 import { User } from "firebase/auth";
 import { RoomDetails, RoomMember } from "./types";
-import { WebRTCMode } from "./webrtc";
 
 export const notificationState = signal({
   needsPermission: false,
@@ -14,13 +13,6 @@ export const authState = signal<{
   displayName: "(placeholder)",
 });
 
-export const webRtcState = signal<{
-  localDescription?: RTCSessionDescription | null;
-  peers: Record<string, RTCPeerConnection>;
-  iceCandidates: RTCIceCandidate[];
-  mode?: WebRTCMode;
-}>({ peers: {}, iceCandidates: [] });
-
 export const roomState = signal<{
   room?: RoomDetails;
   members: Record<string, RoomMember>;
@@ -29,9 +21,9 @@ export const roomState = signal<{
   members: {},
 });
 
-export const signallingState = signal<{
-  seenMessages: Record<string, Set<string>>;
-}>({ seenMessages: {} });
+export const isRoomHost = computed(
+  () => roomState.value.room?.uid === authState.value.user?.uid,
+);
 
 export function updateState<T>(s: Signal<T>, updater: (s: T) => Partial<T>): T {
   s.value = {
