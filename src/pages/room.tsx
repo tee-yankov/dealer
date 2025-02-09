@@ -2,13 +2,14 @@ import { Link, useParams } from "wouter-preact";
 import Hand from "../components/hand";
 import StatusLight, { StatusLightStates } from "../components/status-light";
 import { useEffect } from "preact/hooks";
-import { fetchRoom } from "../util/firebase";
+import { createRoomMember, fetchRoom } from "../util/firebase";
 import { DotDotDot } from "../components/animate-text";
 import { authState, roomState } from "../util/state";
 import { handleRoomMember, initializeWebRTC, WebRTCMode } from "../util/webrtc";
 import { useAsync } from "../hooks/useAsync";
 import useListenForRoomMembers from "../hooks/useListenForRoomMembers";
 import PlayingField from "../components/playing-field";
+import { setLocalWebRTCMode } from "../util/actions";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -17,21 +18,18 @@ function RoomPage() {
   });
   const uid = authState.value.user?.uid;
   const { room } = roomState.value;
-  const amITheHost = uid === room?.uid;
   const { invoke: handleRoom, isResolved: isWebRtcInitialized } = useAsync(
     async () => {
-      if (!isRoomResolved) {
-        return;
-      }
+      const amITheHost = uid === room?.uid;
 
       if (!amITheHost) {
-        await initializeWebRTC(WebRTCMode.Client, {
-          uid: room!.uid,
-          roomId: roomId!,
+        await createRoomMember(roomId!, {
+          name: authState.value.displayName,
+          answers: {},
         });
-      } else {
-        await initializeWebRTC(WebRTCMode.Server, { roomId: roomId! });
       }
+
+      setLocalWebRTCMode(amITheHost ? WebRTCMode.Server : WebRTCMode.Client);
     },
   );
 

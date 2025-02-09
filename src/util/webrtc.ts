@@ -133,6 +133,9 @@ export async function addIceCandidates(
 
 export async function handleRoomMember(snapshot: QuerySnapshot) {
   const { room, members: currentMembers, roomId } = roomState.value;
+  if (!roomId) {
+    throw new Error("no roomId in room member handler");
+  }
   const { mode } = webRtcState.value;
   const allMembers = snapshot.docs.reduce<Record<string, RoomMember>>(
     (acc, v) => {
@@ -174,12 +177,18 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
       if (isNewMember) {
         await initializeWebRTC(WebRTCMode.Server, {
           uid,
-          roomId: roomId!,
+          roomId,
         });
       } else {
         const peer = selectPeerConnection(uid);
         const answer = member.answers[hostUid];
-        if (answer.sdp && answer.type === "answer" && !peer.remoteDescription) {
+        if (
+          answer &&
+          answer.sdp &&
+          answer.type === "answer" &&
+          !peer.remoteDescription
+        ) {
+          console.log("setting client answer");
           await peer.setRemoteDescription(answer);
         }
       }
@@ -188,7 +197,8 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
     if (isNewMessage) {
       console.log("received message", message);
       if (message.type === "offer" && message.sdp) {
-        await setRemoteDescriptionAndAnswer(roomId!, hostUid, message);
+        await initializeWebRTC(WebRTCMode.Client, { roomId, uid: hostUid });
+        await setRemoteDescriptionAndAnswer(roomId, hostUid, message);
       }
     }
   }
