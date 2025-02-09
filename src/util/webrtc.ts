@@ -1,11 +1,6 @@
 import { QuerySnapshot } from "firebase/firestore";
 import debounce from "./debounce";
-import {
-  createRoomMember,
-  fetchRoomMember,
-  publishOwnAnswer,
-  updateMember,
-} from "./firebase";
+import { publishOwnAnswer, updateMember } from "./firebase";
 import { iceServers } from "./ice";
 import {
   authState,
@@ -26,6 +21,9 @@ export async function initializeWebRTC(
   mode: WebRTCMode,
   { roomId, uid }: { roomId: string; uid?: string },
 ) {
+  if (webRtcState.value.peers[uid!]) {
+    return webRtcState.value.peers[uid!];
+  }
   console.log(`Starting WebRTC in ${mode} mode`);
   const peerConnection = new RTCPeerConnection({ iceServers });
 
@@ -44,18 +42,15 @@ export async function initializeWebRTC(
       await peerConnection.setLocalDescription(
         await peerConnection.createOffer(),
       );
-      await publishOwnAnswer(
-        roomId,
-        peerConnection.localDescription!.toJSON(),
-        uid!,
-      );
+      if (uid) {
+        await publishOwnAnswer(
+          roomId,
+          peerConnection.localDescription!.toJSON(),
+          uid,
+        );
+      }
     };
   } else {
-    await createRoomMember(roomId, {
-      name: authState.value.displayName,
-      answers: {},
-    });
-
     peerConnection.ondatachannel = () => {
       console.log("data channel received");
     };
@@ -97,13 +92,10 @@ export async function initializeWebRTC(
 export async function setRemoteDescriptionAndAnswer(
   roomId: string,
   hostUid: string,
-  remotePeerUid: string,
+  sdp: RTCSessionDescriptionInit,
 ) {
-  const peerConnection = selectPeerConnection(remotePeerUid);
+  const peerConnection = selectPeerConnection(hostUid);
 
-  const hostMember = (await fetchRoomMember(roomId, hostUid))!;
-
-  const sdp = hostMember.answers[authState.value.user!.uid];
   await peerConnection.setRemoteDescription(sdp);
   const answer = await peerConnection.createAnswer();
   await peerConnection.setLocalDescription(answer);
@@ -152,44 +144,59 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
   console.log("all members", allMembers);
   const ownUid = authState.value.user!.uid;
   const hostUid = room!.uid;
-  const messages = currentMembers[hostUid]?.answers[ownUid] ?? [];
-  // check which messages are new
-  const newMessages = messages.filter(
-    (message) =>
-      !signallingState.value.seenMessages[hostUid].has(JSON.stringify(message)),
-  );
+  const message = allMembers[hostUid]?.answers[ownUid] ?? {};
+  const isNewMessage =
+    mode !== WebRTCMode.Server &&
+    !signallingState.value.seenMessages[hostUid]?.has(JSON.stringify(message));
 
-  for (const message of newMessages) {
-    console.log("received message", message);
-  }
-
-  const newRoomMembers = Object.fromEntries(
-    Object.entries(allMembers).filter(
-      ([uid]) => uid !== ownUid && !currentMembers[uid],
-    ),
-  );
-  console.log("room members change");
-  console.dir({
-    members: allMembers,
-    newRoomMembers,
-    me: authState.value.user?.uid,
-  });
-
-  updateState(roomState, (state) => ({
-    members: {
-      ...state.members,
-      ...newRoomMembers,
+  updateState(signallingState, (state) => ({
+    seenMessages: {
+      ...state.seenMessages,
+      [hostUid]: state.seenMessages[hostUid]
+        ? new Set([...state.seenMessages[hostUid], JSON.stringify(message)])
+        : new Set([JSON.stringify(message)]),
     },
   }));
 
+  console.log("room members change");
+  console.dir({
+    members: allMembers,
+    me: authState.value.user?.uid,
+  });
+
   if (mode === WebRTCMode.Server) {
-    for (const [uid, member] of Object.entries(newRoomMembers)) {
-      const peerConnection = await initializeWebRTC(WebRTCMode.Server, {
-        uid,
-        roomId: roomId!,
-      });
+    // initialize peer for each new room member
+    for (const [uid, member] of Object.entries(allMembers)) {
+      if (uid === hostUid) {
+        continue;
+      }
+      const isNewMember = !currentMembers[uid];
+      if (isNewMember) {
+        await initializeWebRTC(WebRTCMode.Server, {
+          uid,
+          roomId: roomId!,
+        });
+      } else {
+        const peer = selectPeerConnection(uid);
+        const answer = member.answers[hostUid];
+        if (answer.sdp && answer.type === "answer" && !peer.remoteDescription) {
+          await peer.setRemoteDescription(answer);
+        }
+      }
+    }
+  } else {
+    if (isNewMessage) {
+      console.log("received message", message);
+      if (message.type === "offer" && message.sdp) {
+        await setRemoteDescriptionAndAnswer(roomId!, hostUid, message);
+      }
     }
   }
+
+  updateState(roomState, () => ({
+    members: allMembers,
+  }));
+
   // const peerConnection = selectPeerConnection(uid);
   // const iceCandidates = member.iceCandidates ?? [];
   // await addIceCandidates(iceCandidates, uid);
@@ -198,19 +205,4 @@ export async function handleRoomMember(snapshot: QuerySnapshot) {
   //   await setLocalDescription(offer, uid);
   //   await publishLocalOffer(offer, uid);
   // }
-}
-
-async function setLocalDescription(
-  description: RTCSessionDescriptionInit,
-  remotePeerUid: string,
-) {
-  const peerConnection = selectPeerConnection(remotePeerUid);
-  await peerConnection.setLocalDescription(description);
-}
-
-async function publishLocalOffer(
-  description: RTCSessionDescriptionInit,
-  memberUid: string,
-) {
-  await publishOwnAnswer(roomState.value.roomId!, description, memberUid);
 }
