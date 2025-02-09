@@ -5,7 +5,12 @@ import { useEffect } from "preact/hooks";
 import { createRoomMember, fetchRoom } from "../util/firebase";
 import { DotDotDot } from "../components/animate-text";
 import { authState, roomState } from "../util/state";
-import { handleRoomMember, initializeWebRTC, WebRTCMode } from "../util/webrtc";
+import {
+  handleRoomMember,
+  handleRoomMemberChanges,
+  initializeWebRTC,
+  WebRTCMode,
+} from "../util/webrtc";
 import { useAsync } from "../hooks/useAsync";
 import useListenForRoomMembers from "../hooks/useListenForRoomMembers";
 import PlayingField from "../components/playing-field";
@@ -39,7 +44,11 @@ function RoomPage() {
     }
   }, [isRoomResolved]);
 
-  useListenForRoomMembers(roomId!, handleRoomMember, isWebRtcInitialized);
+  useListenForRoomMembers(
+    roomId!,
+    handleRoomMemberChanges,
+    isWebRtcInitialized,
+  );
 
   return (
     <div className="page">
