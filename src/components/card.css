@@ -78,3 +78,8 @@
         0px 8px
     );
 }
+
+.card-container-disabled {
+    cursor: not-allowed;
+    filter: grayscale(1);
+}

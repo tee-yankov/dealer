@@ -36,6 +36,7 @@ export interface CardProps {
   onClick?: (rank: CardRank) => void;
   className?: string;
   flipped?: boolean;
+  disabled?: boolean;
 }
 
 function Card({
@@ -44,8 +45,12 @@ function Card({
   onClick,
   className,
   flipped = false,
+  disabled = false,
 }: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
+  useEffect(() => {
+    setCardIndex(rank);
+  }, [rank]);
   const [cardContainer, setCardContainer] = useState<HTMLDivElement | null>(
     null,
   );
@@ -86,15 +91,19 @@ function Card({
   }, [cardContainer, setCardIndex]);
 
   const handleClick = useCallback(() => {
-    if (onClick) {
+    if (onClick && !disabled) {
       onClick(rank);
     }
-  }, [rank, onClick]);
+  }, [rank, onClick, disabled]);
 
   return (
     <div
       onClick={handleClick}
-      className={classnames("card-container", className)}
+      className={classnames(
+        "card-container",
+        disabled && "card-container-disabled",
+        className,
+      )}
     >
       <div
         ref={cardRef}

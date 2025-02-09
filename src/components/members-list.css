@@ -1,0 +1,21 @@
+.members-list-container {
+    max-height: 90vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.members-list-container > .title {
+    padding: 0 !important;
+    margin-top: -1rem !important;
+    text-decoration: underline;
+    text-decoration-style: wavy;
+}
+
+.members-list-container > .member {
+    position: relative;
+}
+
+.members-list-container .star {
+    position: absolute;
+    left: -1rem;
+}

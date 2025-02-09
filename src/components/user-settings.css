@@ -1,0 +1,11 @@
+.user-settings-container {
+    margin-bottom: 1rem;
+}
+
+.user-settings-container .is-warning {
+    left: 0;
+}
+
+.character-is-selected {
+    border: 2px solid white;
+}

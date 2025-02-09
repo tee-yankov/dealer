@@ -1,0 +1,12 @@
+.host-controls-container {
+    position: absolute !important;
+    bottom: 0;
+    width: 50%;
+    left: 50%;
+    transform: translate(-50%, 10%);
+    height: 190px;
+}
+
+.host-controls-container > .row {
+    margin-bottom: 1rem;
+}

@@ -1,7 +1,10 @@
-import { useCallback, useState } from "preact/hooks";
 import Card, { CardRank } from "./card";
 import "./hand.css";
 import classnames from "../util/classnames";
+import { authState, roundState } from "../util/state";
+import { RoundStatus } from "../util/types";
+import { useAsync } from "../hooks/useAsync";
+import { selectCardForCurrentRound } from "../util/room";
 
 const HAND_CARDS = [
   CardRank.Ace,
@@ -15,16 +18,26 @@ const HAND_CARDS = [
 ];
 
 function Hand() {
-  const [selectedCard, setSelectedCard] = useState<CardRank | null>(null);
+  const { currentRound } = roundState.value;
+  const selectedCard =
+    currentRound?.cards?.[authState.value.user?.uid ?? ""]?.card;
 
-  const handleSelectCard = useCallback((rank: CardRank) => {
-    setSelectedCard((currentRank) => rank === currentRank ? null : rank)
-  }, [])
+  const { invoke: handleSelectCard } = useAsync((card: CardRank) =>
+    selectCardForCurrentRound(card),
+  );
 
   return (
     <div className="hand-container">
       {HAND_CARDS.map((rank) => (
-        <Card className={classnames(selectedCard === rank && "card-container-selected")} onClick={handleSelectCard} key={rank} rank={rank} />
+        <Card
+          disabled={currentRound?.status !== RoundStatus.Started}
+          className={classnames(
+            selectedCard === rank && "card-container-selected",
+          )}
+          onClick={handleSelectCard}
+          key={rank}
+          rank={rank}
+        />
       ))}
     </div>
   );

@@ -1,6 +1,6 @@
 import { computed, Signal, signal } from "@preact/signals";
 import { User } from "firebase/auth";
-import { RoomDetails, RoomMember } from "./types";
+import { RoomDetails, RoomMember, Round } from "./types";
 
 export const notificationState = signal({
   needsPermission: false,
@@ -21,8 +21,24 @@ export const roomState = signal<{
   members: {},
 });
 
+export const roundState = signal<{
+  currentRound?: Round;
+  previousRounds: Round[];
+}>({
+  previousRounds: [],
+});
+
+// Derived state
 export const isRoomHost = computed(
   () => roomState.value.room?.uid === authState.value.user?.uid,
+);
+
+export const playerMembers = computed(() =>
+  Object.fromEntries(
+    Object.entries(roomState.value.members).filter(
+      ([uid]) => uid !== roomState?.value.room?.uid,
+    ),
+  ),
 );
 
 export function updateState<T>(s: Signal<T>, updater: (s: T) => Partial<T>): T {

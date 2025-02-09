@@ -11,15 +11,15 @@ import {
   setDoc,
   updateDoc,
   runTransaction,
-  QuerySnapshot,
 } from "firebase/firestore";
-import { getAuth, signInAnonymously } from "firebase/auth";
-import { authState, roomState, updateState } from "./state";
-import { RoomDetails, RoomMember } from "./types";
+import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
+import { authState, roomState } from "./state";
+import { MemberProfile, RoomDetails, RoomMember, Round } from "./types";
 
 export enum Collections {
   Members = "members",
   Rooms = "rooms",
+  Rounds = "rounds",
 }
 
 const firebaseConfig = {
@@ -70,8 +70,12 @@ export async function createRoom(roomDetails: RoomDetails) {
   );
 
   // create host member record and provide offer
+  const { user } = authState.value;
   await createRoomMember(roomDocRef.id, {
-    name: authState.value.displayName,
+    profile: {
+      displayName: user?.displayName ?? "",
+      character: user?.photoURL ?? "",
+    },
   });
 
   return roomDocRef.id;
@@ -121,6 +125,28 @@ export async function createRoomMember(roomId: string, roomMember: RoomMember) {
   return authState.value.user?.uid!;
 }
 
+export async function updateRoomMember(
+  roomId: string,
+  roomMember: Partial<RoomMember>,
+) {
+  const { user } = authState.value;
+  if (!user?.uid) {
+    throw new Error("missing uid");
+  }
+
+  console.log(
+    "updating",
+    getRoomMembersCollection(roomId).path,
+    user.uid,
+    roomMember,
+  );
+
+  await updateDoc(
+    doc(db, getRoomMembersCollection(roomId).path, user.uid),
+    roomMember,
+  );
+}
+
 export async function fetchRoomMember(roomId: string, uid: string) {
   console.log("Fetching room member", roomId, uid);
   const memberDoc = await getDoc(
@@ -130,32 +156,11 @@ export async function fetchRoomMember(roomId: string, uid: string) {
   return memberDoc.data();
 }
 
-export async function publishOwnAnswer(
-  roomId: string,
-  sdp: RTCSessionDescriptionInit | null,
-  to: string,
-) {
-  await runTransaction(db, async (transaction) => {
-    const ownUid = authState.value.user!.uid;
-    const ownKey = getRoomMemberKey(roomId, ownUid);
-    const existingMember = await transaction.get(ownKey);
-    if (!existingMember.exists()) {
-      throw new Error("Own member record does not exist");
-    }
-
-    const newAnswers = {
-      ...existingMember.data().answers,
-      [to]: sdp,
-    };
-
-    transaction.update(ownKey, {
-      answers: newAnswers,
-    });
-  });
-}
-
 export const getRoomMembersCollection = (roomId: string) =>
   collection(db, Collections.Rooms, roomId, Collections.Members);
+
+export const getRoomRoundsCollection = (roomId: string) =>
+  collection(db, Collections.Rooms, roomId, Collections.Rounds);
 
 export const getRoomMemberKey = (roomId: string, memberId: string) =>
   doc(db, `${getRoomMembersCollection(roomId).path}/${memberId}`);
@@ -167,29 +172,32 @@ export async function updateRoom(
   return updateDoc(doc(db, Collections.Rooms, roomId), roomDetails);
 }
 
-export async function updateMember(
+export async function createRound(roomId: string, round: Round) {
+  const roundDocRef = await addDoc(getRoomRoundsCollection(roomId), round);
+
+  return roundDocRef.id;
+}
+
+export async function updateRound(
   roomId: string,
-  memberId: string,
-  memberDetails: Partial<
-    Omit<RoomMember, "iceCandidates"> & { iceCandidates: RTCIceCandidateInit[] }
-  >,
+  roundId: string,
+  round: Partial<Round>,
 ) {
   return updateDoc(
-    doc(db, getRoomMembersCollection(roomId).path, memberId),
-    memberDetails,
+    doc(db, getRoomRoundsCollection(roomId).path, roundId),
+    round,
   );
 }
 
-export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
-  for (const change of snapshot.docChanges()) {
-    console.log(change.type, change.doc.id, change.doc.data());
+export async function updateOwnProfile(profile: MemberProfile) {
+  const { room } = roomState.value;
+
+  await updateProfile(auth.currentUser!, {
+    displayName: profile.displayName,
+    photoURL: profile.character,
+  });
+
+  if (room) {
+    await updateRoomMember(room.uid, { profile });
   }
-
-  updateState(roomState, () => ({
-    members: Object.fromEntries(
-      snapshot.docs.map((v) => [v.id, v.data() as RoomMember]),
-    ),
-  }));
-
-  console.log(roomState.value.members);
 }

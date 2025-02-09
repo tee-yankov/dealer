@@ -40,3 +40,9 @@
     line-height: 0.8em;
     inline-size: min-content;
 }
+
+.status-light-container {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+}

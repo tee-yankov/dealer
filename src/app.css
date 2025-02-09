@@ -1,4 +1,4 @@
-@import url('https://fonts.cdnfonts.com/css/public-pixel');
+@import url("https://fonts.cdnfonts.com/css/public-pixel");
 @import url("nes.css/css/nes.css");
 
 html,
@@ -36,11 +36,11 @@ body {
 }
 
 .room-name-input {
-  margin-bottom: 2rem;;
+  margin-bottom: 2rem;
 }
 
 .room-creating-text {
-  margin-bottom: 2rem;;
+  margin-bottom: 2rem;
 }
 
 .room-create-button {
@@ -50,4 +50,22 @@ body {
 
 .text-sm {
   font-size: 0.6em;
+}
+
+.title {
+  background-color: #333 !important;
+}
+
+.nes-container {
+  border-color: white;
+}
+
+.avatar {
+  display: block;
+  width: 6rem;
+  border-radius: 50%;
+  height: 6rem;
+  border: 2px solid white;
+  margin: 0 auto;
+  overflow: hidden;
 }
