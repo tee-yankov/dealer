@@ -10,7 +10,6 @@ import {
   getDocs,
   setDoc,
   updateDoc,
-  runTransaction,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { authState, roomState } from "./state";
