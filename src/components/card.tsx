@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import "./card.css";
 import classnames from "../util/classnames";
+import Shine from "./shine";
 
 const xOffset = 142;
 /* const yOffset = 190; */
@@ -128,6 +129,7 @@ function Card({
           style={cardOffset}
         />
         <div className="card card-back"></div>
+        <Shine active={active} />
       </div>
     </div>
   );
