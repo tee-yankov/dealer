@@ -19,6 +19,7 @@ import { capitalize } from "../util/capitalize";
 import classnames from "../util/classnames";
 import { RoundStatus } from "../util/types";
 import UserSettings from "../components/user-settings";
+import { avg, getRoundStats } from "../util/math";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -49,8 +50,10 @@ function RoomPage() {
 
   useListenForRounds(roomId!, handleRoomRoundsChange, isRoomResolved);
 
-  const currentOrLastRound =
-    currentRound ?? previousRounds[previousRounds.length - 1];
+  const roundStats =
+    currentRound?.status === RoundStatus.Ended
+      ? getRoundStats(currentRound)
+      : null;
 
   return (
     <>
@@ -72,17 +75,26 @@ function RoomPage() {
               !previousRounds[previousRounds.length - 1]?.status &&
                 !currentRound?.status &&
                 "is-warning",
-              currentOrLastRound?.status === RoundStatus.Started &&
-                "is-success",
-              currentOrLastRound?.status === RoundStatus.Ended && "is-error",
+              currentRound?.status === RoundStatus.Started && "is-success",
+              currentRound?.status === RoundStatus.Ended && "is-error",
             )}
           >
             {" "}
-            {currentOrLastRound?.status
-              ? capitalize(currentOrLastRound.status)
-              : "Pending"}
+            {currentRound?.status ? capitalize(currentRound.status) : "Pending"}
           </span>
         </p>
+        {roundStats ? (
+          <div>
+            <p>
+              Avg: {roundStats.avg.toFixed(2)} Median:{" "}
+              {roundStats.median.toFixed(2)}
+            </p>
+          </div>
+        ) : (
+          <div>
+            <p> </p>
+          </div>
+        )}
         <PlayingField />
         {isRoomHost.value ? <HostControls /> : <Hand />}
       </div>

@@ -133,13 +133,6 @@ export async function updateRoomMember(
     throw new Error("missing uid");
   }
 
-  console.log(
-    "updating",
-    getRoomMembersCollection(roomId).path,
-    user.uid,
-    roomMember,
-  );
-
   await updateDoc(
     doc(db, getRoomMembersCollection(roomId).path, user.uid),
     roomMember,
@@ -189,7 +182,7 @@ export async function updateRound(
 }
 
 export async function updateOwnProfile(profile: MemberProfile) {
-  const { room } = roomState.value;
+  const { room, roomId } = roomState.value;
 
   await updateProfile(auth.currentUser!, {
     displayName: profile.displayName,
@@ -197,6 +190,6 @@ export async function updateOwnProfile(profile: MemberProfile) {
   });
 
   if (room) {
-    await updateRoomMember(room.uid, { profile });
+    await updateRoomMember(roomId!, { profile });
   }
 }

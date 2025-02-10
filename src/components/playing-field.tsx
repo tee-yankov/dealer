@@ -17,8 +17,10 @@ function PlayingField() {
           return (
             <div key={uid} className="playing-field-slot-container">
               {character && (
-                <div className="avatar">
-                  <i className={`nes-${character}`}></i>
+                <div className="avatar-wrapper">
+                  <div className="avatar">
+                    <i className={`nes-${character}`}></i>
+                  </div>
                 </div>
               )}
               <p className="nes-text">{name}</p>
