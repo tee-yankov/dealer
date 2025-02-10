@@ -1,6 +1,5 @@
 import Card, { CardRank } from "./card";
 import "./hand.css";
-import classnames from "../util/classnames";
 import { authState, roundState } from "../util/state";
 import { RoundStatus } from "../util/types";
 import { useAsync } from "../hooks/useAsync";
