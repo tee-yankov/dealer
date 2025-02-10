@@ -19,7 +19,7 @@ import { capitalize } from "../util/capitalize";
 import classnames from "../util/classnames";
 import { RoundStatus } from "../util/types";
 import UserSettings from "../components/user-settings";
-import { avg, getRoundStats } from "../util/math";
+import { getRoundStats } from "../util/math";
 
 function RoomPage() {
   const { roomId } = useParams();
