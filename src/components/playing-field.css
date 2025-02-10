@@ -2,11 +2,13 @@
     display: flex;
     justify-content: space-around;
     position: relative;
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    height: 60%;
 }
 
 .playing-field-slot {
     height: 212px;
-    width: 100%;
     position: relative;
     display: flex;
     justify-content: center;

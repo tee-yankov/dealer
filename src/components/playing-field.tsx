@@ -6,72 +6,37 @@ import { RoundStatus } from "../util/types";
 function PlayingField() {
   const { currentRound } = roundState.value;
 
-  const roundContent = Object.entries(playerMembers.value).map(
-    ([uid, { profile }]) => {
-      const card = currentRound?.cards?.[uid]?.card;
-      const name = profile?.displayName || "(placeholder)";
-      const character = profile?.character || "mario";
-
-      return (
-        <div key={uid} className="playing-field-slot-container">
-          {character && (
-            <div className="avatar-wrapper">
-              <div className="avatar">
-                <i className={`nes-${character}`}></i>
-              </div>
-            </div>
-          )}
-          <p className="nes-text">{name}</p>
-          <div className="nes-container is-rounded playing-field-slot">
-            <div className="playing-field-slot-content">
-              {card !== undefined && (
-                <Card
-                  rank={card}
-                  flipped={currentRound?.status === RoundStatus.Started}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    },
-  );
-
   return (
     <>
       <div className="playing-field-container">
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
-        {roundContent}
+        {Object.entries(playerMembers.value).map(([uid, { profile }]) => {
+          const card = currentRound?.cards?.[uid]?.card;
+          const name = profile?.displayName || "(placeholder)";
+          const character = profile?.character || "mario";
+
+          return (
+            <div key={uid} className="playing-field-slot-container">
+              {character && (
+                <div className="avatar-wrapper">
+                  <div className="avatar">
+                    <i className={`nes-${character}`}></i>
+                  </div>
+                </div>
+              )}
+              <p className="nes-text">{name}</p>
+              <div className="nes-container is-rounded playing-field-slot">
+                <div className="playing-field-slot-content">
+                  {card !== undefined && (
+                    <Card
+                      rank={card}
+                      flipped={currentRound?.status === RoundStatus.Started}
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
     </>
   );

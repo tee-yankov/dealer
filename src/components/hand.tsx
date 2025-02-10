@@ -31,12 +31,13 @@ function Hand() {
       {HAND_CARDS.map((rank) => (
         <Card
           disabled={currentRound?.status !== RoundStatus.Started}
-          className={classnames(
-            selectedCard === rank && "card-container-selected",
-          )}
           onClick={handleSelectCard}
           key={rank}
           rank={rank}
+          active={
+            currentRound?.status === RoundStatus.Started &&
+            selectedCard === rank
+          }
         />
       ))}
     </div>

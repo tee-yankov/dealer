@@ -3,6 +3,12 @@
     overflow-x: hidden;
     overflow-y: auto;
     max-width: 15rem;
+    background-color: #333;
+    height: unset;
+}
+
+.members-list-container-collapsed {
+    height: 0;
 }
 
 .members-list-container > .title {

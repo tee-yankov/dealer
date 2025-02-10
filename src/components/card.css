@@ -50,9 +50,6 @@
         transform: rotateY(360deg);
     }
 }
-.card-container:hover .card-inner-container {
-    animation-play-state: paused;
-}
 
 .card-pixel-corners {
     clip-path: polygon(
@@ -82,4 +79,29 @@
 .card-container-disabled {
     cursor: not-allowed;
     filter: grayscale(1);
+}
+
+.card-inner-container-active {
+    animation: tilt-shaking 0.5s infinite;
+    animation-delay: 0;
+    animation-timing-function: ease-in-out;
+    transform-origin: bottom center;
+}
+
+@keyframes tilt-shaking {
+    0% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(2deg);
+    }
+    50% {
+        transform: rotate(0eg);
+    }
+    75% {
+        transform: rotate(-2deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
 }

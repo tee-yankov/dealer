@@ -2,14 +2,11 @@
     display: flex;
     position: absolute;
     bottom: 0;
-    width: 50%;
     left: 50%;
     transform: translateX(calc(-50% - 71px)) translateY(25%);
+    width: 30%;
 }
 
-.hand-container > .card-container-selected {
-    transform: translateY(-125%) !important;
-}
 .hand-container > .card-container {
     transform-origin: bottom center;
     transform-style: preserve-3d;

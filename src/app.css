@@ -20,7 +20,6 @@ body {
   position: relative;
   overflow: hidden;
   width: 100%;
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   height: 100vh;
@@ -60,6 +59,9 @@ body {
   border-color: white;
 }
 
+.avatar-wrapper {
+  transform: scale(0.5) translateY(75%);
+}
 .avatar {
   display: block;
   width: 6rem;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "preact/hooks";
+import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import "./card.css";
 import classnames from "../util/classnames";
 
@@ -37,6 +37,7 @@ export interface CardProps {
   className?: string;
   flipped?: boolean;
   disabled?: boolean;
+  active?: boolean;
 }
 
 function Card({
@@ -46,6 +47,7 @@ function Card({
   className,
   flipped = false,
   disabled = false,
+  active = false,
 }: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
   useEffect(() => {
@@ -96,6 +98,13 @@ function Card({
     }
   }, [rank, onClick, disabled]);
 
+  const cardOffset = useMemo(
+    () => ({
+      backgroundPositionX: -cardIndex * xOffset,
+    }),
+    [cardIndex],
+  );
+
   return (
     <div
       onClick={handleClick}
@@ -111,11 +120,12 @@ function Card({
           "card-inner-container",
           flipped && "card-inner-container-flipped",
           animate && "card-inner-container-animated",
+          active && "card-inner-container-active",
         )}
       >
         <div
           className="card card-front card-pixel-corners"
-          style={{ backgroundPositionX: -cardIndex * xOffset }}
+          style={cardOffset}
         />
         <div className="card card-back"></div>
       </div>
