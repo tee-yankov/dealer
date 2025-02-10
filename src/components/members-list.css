@@ -2,6 +2,7 @@
     max-height: 90vh;
     overflow-x: hidden;
     overflow-y: auto;
+    max-width: 15rem;
 }
 
 .members-list-container > .title {
@@ -13,9 +14,12 @@
 
 .members-list-container > .member {
     position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .members-list-container .star {
     position: absolute;
-    left: -1rem;
+    transform: translateX(-100%);
 }
