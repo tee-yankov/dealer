@@ -47,9 +47,9 @@ export async function selectCardForCurrentRound(card: CardRank) {
 }
 
 export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
-  for (const change of snapshot.docChanges()) {
-    console.log(change.type, change.doc.id, change.doc.data());
-  }
+  // for (const change of snapshot.docChanges()) {
+  //   console.log(change.type, change.doc.id, change.doc.data());
+  // }
 
   updateState(roomState, () => ({
     members: Object.fromEntries(
@@ -59,9 +59,9 @@ export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
 }
 
 export async function handleRoomRoundsChange(snapshot: QuerySnapshot) {
-  for (const change of snapshot.docChanges()) {
-    console.log(`round ${change.type}`, change.doc.id, change.doc.data());
-  }
+  // for (const change of snapshot.docChanges()) {
+  //   console.log(`round ${change.type}`, change.doc.id, change.doc.data());
+  // }
 
   const rounds = snapshot.docs.map<Round>((v) => ({
     ...(v.data() as Round),

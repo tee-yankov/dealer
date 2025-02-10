@@ -139,15 +139,6 @@ export async function updateRoomMember(
   );
 }
 
-export async function fetchRoomMember(roomId: string, uid: string) {
-  console.log("Fetching room member", roomId, uid);
-  const memberDoc = await getDoc(
-    doc(db, `/${Collections.Rooms}/${roomId}/${Collections.Members}/${uid}`),
-  );
-
-  return memberDoc.data();
-}
-
 export const getRoomMembersCollection = (roomId: string) =>
   collection(db, Collections.Rooms, roomId, Collections.Members);
 
