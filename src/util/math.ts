@@ -40,7 +40,7 @@ export const getRoundStats = (round: Round) => {
   );
 
   return {
-    avg: avg(cards),
+    avg: avg(cards) || 0,
     median: median(cards),
   };
 };

@@ -2,7 +2,6 @@
     display: flex;
     justify-content: space-around;
     position: relative;
-    top: 5%;
 }
 
 .playing-field-slot {

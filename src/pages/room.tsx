@@ -92,7 +92,7 @@ function RoomPage() {
           </div>
         ) : (
           <div>
-            <p> </p>
+            <p>&nbsp;</p>
           </div>
         )}
         <PlayingField />
