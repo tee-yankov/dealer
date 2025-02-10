@@ -7,7 +7,13 @@ export type DialogProps = PropsWithChildren<{
   onCancel?: () => void;
 }>;
 
-function Dialog({ children, title, isOpen = false, onConfirm, onCancel }: DialogProps) {
+function Dialog({
+  children,
+  title,
+  isOpen = false,
+  onConfirm,
+  onCancel,
+}: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openState = useRef(isOpen);
 
@@ -18,8 +24,10 @@ function Dialog({ children, title, isOpen = false, onConfirm, onCancel }: Dialog
       } else {
         dialogRef.current?.close();
       }
+
+      openState.current = isOpen;
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   return (
     <section>
@@ -28,13 +36,17 @@ function Dialog({ children, title, isOpen = false, onConfirm, onCancel }: Dialog
           {title && <p class="title">{title}</p>}
           {children}
           <menu class="dialog-menu">
-            <button onClick={onCancel} class="nes-btn">Cancel</button>
-            <button onClick={onConfirm} class="nes-btn is-primary">Confirm</button>
+            <button onClick={onCancel} class="nes-btn">
+              Cancel
+            </button>
+            <button onClick={onConfirm} class="nes-btn is-primary">
+              Confirm
+            </button>
           </menu>
         </form>
       </dialog>
     </section>
-  )
+  );
 }
 
-export default Dialog
+export default Dialog;

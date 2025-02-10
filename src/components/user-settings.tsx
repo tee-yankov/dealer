@@ -33,10 +33,14 @@ function UserSettings() {
     setIsSettingsOpen((isOpen) => !isOpen);
   }, [setIsSettingsOpen]);
 
-  const handleSaveSettings = useCallback(() => {
-    handleClickSettings();
-    saveUserSettings(userProfileState);
-  }, [userProfileState]);
+  const handleSaveSettings = useCallback(
+    (e?: any) => {
+      e?.preventDefault();
+      setIsSettingsOpen(false);
+      saveUserSettings(userProfileState);
+    },
+    [userProfileState],
+  );
 
   const handleChangeDisplayName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -72,7 +76,7 @@ function UserSettings() {
         onCancel={handleClickSettings}
         onConfirm={handleSaveSettings}
       >
-        <form>
+        <form onSubmit={handleSaveSettings}>
           <div class="nes-field">
             <label for="name">Your name</label>
             <input
