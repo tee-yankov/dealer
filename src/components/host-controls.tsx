@@ -18,24 +18,24 @@ function HostControls() {
   return (
     <div className="nes-container is-rounded is-dark host-controls-container">
       <div className="row">
-        {currentRound?.status !== RoundStatus.Started && (
-          <button
-            className="nes-btn is-primary"
-            disabled={isRoundStarting}
-            onClick={() => handleStartNewRound()}
-          >
-            Start Round
-          </button>
-        )}
-        {currentRound?.status === RoundStatus.Started && (
-          <button
-            className="nes-btn is-error"
-            disabled={isRoundEnding}
-            onClick={() => handleEndCurrentRound()}
-          >
-            End Round
-          </button>
-        )}
+        <button
+          className="nes-btn is-primary"
+          disabled={
+            currentRound?.status === RoundStatus.Started || isRoundStarting
+          }
+          onClick={() => handleStartNewRound()}
+        >
+          Start Round
+        </button>
+        <button
+          className="nes-btn is-error"
+          disabled={
+            currentRound?.status !== RoundStatus.Started || isRoundEnding
+          }
+          onClick={() => handleEndCurrentRound()}
+        >
+          End Round
+        </button>
       </div>
       {/* Progress */}
       <div className="row">
