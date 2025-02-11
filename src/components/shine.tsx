@@ -2,7 +2,7 @@ import "./shine.css";
 
 function Shine({
   active = false,
-  amount = 10,
+  amount = 20,
 }: {
   active?: boolean;
   amount?: number;

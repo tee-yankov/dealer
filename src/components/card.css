@@ -23,6 +23,8 @@
     height: 190px;
     perspective: 1000px;
     transition: transform 0.4s ease-in-out;
+
+    --ambientAmount: 0.1;
 }
 
 .card-inner-container {
@@ -31,6 +33,7 @@
     position: relative;
     text-align: center;
     transform-style: preserve-3d;
+    will-change: transform;
 }
 
 .card-inner-container-flipped {
@@ -77,32 +80,30 @@
 
 .card-container-disabled {
     cursor: not-allowed;
-    filter: grayscale(1);
 }
 
 .card-inner-container-active {
-    animation: tilt-shaking 2s infinite;
-    animation-delay: 0;
+    animation-name: ambientMovement;
+    animation-duration: 2000ms;
+    animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
-    animation-fill-mode: both;
     transform-origin: bottom center;
-    transform-style: preserve-3d;
+    transition: transform 0.3s ease-in;
+    transform: rotateZ(calc(var(--ambientAmount) * 10deg));
 }
 
-@keyframes tilt-shaking {
-    0% {
-        transform: rotateZ(0deg);
-    }
-    25% {
-        transform: rotateZ(2deg);
+@keyframes ambientMovement {
+    0%,
+    100% {
+        --ambientAmount: 0.1;
     }
     50% {
-        transform: rotateZ(0eg);
+        --ambientAmount: -0.1;
     }
-    75% {
-        transform: rotateZ(-2deg);
-    }
-    100% {
-        transform: rotateZ(0deg);
-    }
+}
+
+@property --ambientAmount {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0.1;
 }
