@@ -1,5 +1,4 @@
 .host-controls-container {
-    position: absolute !important;
     bottom: 0;
     width: 50%;
     left: 50%;
@@ -9,4 +8,7 @@
 
 .host-controls-container > .row {
     margin-bottom: 1rem;
+    position: relative;
+    bottom: 0;
+    align-self: end;
 }

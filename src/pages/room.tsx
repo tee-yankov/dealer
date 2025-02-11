@@ -20,6 +20,7 @@ import classnames from "../util/classnames";
 import { RoundStatus } from "../util/types";
 import UserSettings from "../components/user-settings";
 import { getRoundStats } from "../util/math";
+import { Layout, LayoutSlot } from "../components/layout";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -64,44 +65,52 @@ function RoomPage() {
           text={<span className="nes-text is-success text-sm">Connected</span>}
         />
       </div>
-      <div className="page">
-        <Link to="/">Back</Link>
-        <h2>Room: {room?.name || <DotDotDot reverse />}</h2>
-        <p>
-          <span>Round {currentRound ? previousRounds.length + 1 : 1}</span>
-          <span
-            className={classnames(
-              "nes-text",
-              !previousRounds[previousRounds.length - 1]?.status &&
-                !currentRound?.status &&
-                "is-warning",
-              currentRound?.status === RoundStatus.Started && "is-success",
-              currentRound?.status === RoundStatus.Ended && "is-error",
-            )}
-          >
-            {" "}
-            {currentRound?.status ? capitalize(currentRound.status) : "Pending"}
-          </span>
-        </p>
-        {roundStats ? (
-          <div>
-            <p>
-              Avg: {roundStats.avg.toFixed(2)} Median:{" "}
-              {roundStats.median.toFixed(2)}
-            </p>
-          </div>
-        ) : (
-          <div>
-            <p>&nbsp;</p>
-          </div>
-        )}
-        <PlayingField />
-        {isRoomHost.value ? <HostControls /> : <Hand />}
-      </div>
       <div className="room-top-right-container">
         <UserSettings />
         <MembersList />
       </div>
+      <Layout className="page">
+        <LayoutSlot>
+          <Link to="/">Back</Link>
+          <h2>Room: {room?.name || <DotDotDot reverse />}</h2>
+          <p>
+            <span>Round {currentRound ? previousRounds.length + 1 : 1}</span>
+            <span
+              className={classnames(
+                "nes-text",
+                !previousRounds[previousRounds.length - 1]?.status &&
+                  !currentRound?.status &&
+                  "is-warning",
+                currentRound?.status === RoundStatus.Started && "is-success",
+                currentRound?.status === RoundStatus.Ended && "is-error",
+              )}
+            >
+              {" "}
+              {currentRound?.status
+                ? capitalize(currentRound.status)
+                : "Pending"}
+            </span>
+          </p>
+          {roundStats ? (
+            <div>
+              <p>
+                Avg: {roundStats.avg.toFixed(2)} Median:{" "}
+                {roundStats.median.toFixed(2)}
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p>&nbsp;</p>
+            </div>
+          )}
+        </LayoutSlot>
+        <LayoutSlot>
+          <PlayingField />
+        </LayoutSlot>
+        <LayoutSlot className="layout-slot-reversed">
+          {isRoomHost.value ? <HostControls /> : <Hand />}
+        </LayoutSlot>
+      </Layout>
     </>
   );
 }

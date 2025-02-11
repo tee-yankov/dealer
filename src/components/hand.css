@@ -1,10 +1,12 @@
 .hand-container {
     display: flex;
-    position: absolute;
+    position: relative;
     bottom: 0;
     left: 50%;
     transform: translateX(calc(-50% - 71px)) translateY(25%);
     width: 30%;
+    z-index: 1;
+    height: 100%;
 }
 
 .hand-container > .card-container {

@@ -5,4 +5,5 @@
     text-align: center;
     width: 15rem;
     overflow: visible;
+    z-index: 1;
 }

@@ -1,0 +1,19 @@
+.layout-container {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
+    grid-template-rows: 2fr 5fr 2fr;
+    max-height: 100vh;
+    text-align: center;
+}
+
+.layout-slot {
+    overflow: hidden;
+    position: relative;
+}
+
+.layout-slot-reversed {
+    align-self: end;
+}

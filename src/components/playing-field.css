@@ -1,10 +1,11 @@
 .playing-field-container {
     display: flex;
-    justify-content: space-around;
-    position: relative;
     flex-wrap: wrap;
+    position: relative;
     overflow-y: scroll;
-    height: 60%;
+    height: 100%;
+    justify-content: space-around;
+    gap: 1rem;
 }
 
 .playing-field-slot {
@@ -13,12 +14,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.playing-field-flip-btn {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
 }
 
 .playing-field-slot-container {

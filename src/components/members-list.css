@@ -9,6 +9,7 @@
 
 .members-list-container-collapsed {
     height: 0;
+    overflow: hidden;
 }
 
 .members-list-container > .title {
