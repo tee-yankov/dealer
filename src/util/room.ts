@@ -1,4 +1,4 @@
-import { QuerySnapshot } from "firebase/firestore";
+import { deleteField, QuerySnapshot } from "firebase/firestore";
 import { createRound, updateRound } from "./firebase";
 import { authState, roomState, roundState, updateState } from "./state";
 import { RoomMember, Round, RoundStatus } from "./types";
@@ -39,11 +39,17 @@ export async function selectCardForCurrentRound(card: CardRank) {
     throw new Error("error selecting card for current round");
   }
 
-  await updateRound(roomId, currentRound.id!, {
-    [`cards.${user.uid}`]: {
-      card,
-    },
-  });
+  if (currentRound.cards[user.uid]?.card === card) {
+    await updateRound(roomId, currentRound.id!, {
+      [`cards.${user.uid}`]: deleteField(),
+    });
+  } else {
+    await updateRound(roomId, currentRound.id!, {
+      [`cards.${user.uid}`]: {
+        card,
+      },
+    });
+  }
 }
 
 export async function handleRoomMembersChange(snapshot: QuerySnapshot) {

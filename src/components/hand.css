@@ -2,11 +2,13 @@
     display: flex;
     position: relative;
     bottom: 0;
-    left: 50%;
-    transform: translateX(calc(-50% - 71px)) translateY(25%);
-    width: 30%;
     z-index: 1;
+    justify-content: center;
+    transform: translateY(20%);
     height: 100%;
+    margin: 0 auto;
+    width: 40%;
+    max-width: 840px;
 }
 
 .hand-container > .card-container {
@@ -14,11 +16,11 @@
     transform-style: preserve-3d;
 }
 .hand-container > .card-container:nth-child(1) {
-    transform: rotateZ(-20deg);
+    transform: translateY(10%) rotateZ(-20deg);
 }
 
 .hand-container > .card-container:nth-child(2) {
-    transform: rotateZ(-15deg);
+    transform: translateY(5%) rotateZ(-15deg);
 }
 
 .hand-container > .card-container:nth-child(3) {
@@ -38,9 +40,9 @@
 }
 
 .hand-container > .card-container:nth-child(7) {
-    transform: rotateZ(15deg);
+    transform: translateY(5%) rotateZ(15deg);
 }
 
 .hand-container > .card-container:nth-child(8) {
-    transform: rotateZ(20deg);
+    transform: translateY(10%) rotateZ(20deg);
 }

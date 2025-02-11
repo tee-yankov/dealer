@@ -3,6 +3,7 @@ import { roomState, roundState } from "../util/state";
 import { RoundStatus } from "../util/types";
 import { useAsync } from "../hooks/useAsync";
 import { endCurrentRound, startNewRound } from "../util/room";
+import classnames from "../util/classnames";
 
 function HostControls() {
   const { currentRound } = roundState.value;
@@ -19,7 +20,11 @@ function HostControls() {
     <div className="nes-container is-rounded is-dark host-controls-container">
       <div className="row">
         <button
-          className="nes-btn is-primary"
+          className={classnames(
+            "nes-btn is-primary",
+            (currentRound?.status === RoundStatus.Started || isRoundStarting) &&
+              "is-disabled",
+          )}
           disabled={
             currentRound?.status === RoundStatus.Started || isRoundStarting
           }
@@ -28,7 +33,11 @@ function HostControls() {
           Start Round
         </button>
         <button
-          className="nes-btn is-error"
+          className={classnames(
+            "nes-btn is-error",
+            (currentRound?.status !== RoundStatus.Started || isRoundEnding) &&
+              "is-disabled",
+          )}
           disabled={
             currentRound?.status !== RoundStatus.Started || isRoundEnding
           }

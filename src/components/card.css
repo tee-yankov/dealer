@@ -81,6 +81,7 @@
 
 .card-container-disabled {
     cursor: not-allowed;
+    transform: translateY(100%) !important;
 }
 
 .card-inner-container-active {
@@ -89,8 +90,13 @@
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
     transform-origin: bottom center;
-    transition: transform 0.3s ease-in;
+    transition: transform 0.1s ease-in;
     transform: rotateZ(calc(var(--ambientAmount) * 10deg));
+    width: 100%;
+}
+
+.card-inner-container-active > .card {
+    border: 2px solid gold;
 }
 
 @keyframes ambientMovement {
