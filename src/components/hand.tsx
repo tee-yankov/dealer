@@ -18,6 +18,7 @@ const HAND_CARDS = [
 
 function Hand() {
   const { currentRound } = roundState.value;
+  const { cardColor } = authState.value;
   const selectedCard =
     currentRound?.cards?.[authState.value.user?.uid ?? ""]?.card;
 
@@ -37,6 +38,7 @@ function Hand() {
             currentRound?.status === RoundStatus.Started &&
             selectedCard === rank
           }
+          color={cardColor}
         />
       ))}
     </div>

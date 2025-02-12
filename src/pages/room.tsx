@@ -21,6 +21,7 @@ import { RoundStatus } from "../util/types";
 import UserSettings from "../components/user-settings";
 import { getRoundStats } from "../util/math";
 import { Layout, LayoutSlot } from "../components/layout";
+import { CardColor } from "../components/card";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -31,11 +32,12 @@ function RoomPage() {
   const { room } = roomState.value;
   const { invoke: handleRoom } = useAsync(async () => {
     if (!isRoomHost.value) {
-      const { user } = authState.value;
+      const { user, cardColor } = authState.value;
       await createRoomMember(roomId!, {
         profile: {
           displayName: user?.displayName ?? "",
           character: user?.photoURL ?? "",
+          cardColor: (cardColor ?? CardColor.Red) as CardColor,
         },
       });
     }

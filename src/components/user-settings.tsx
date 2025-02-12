@@ -7,6 +7,7 @@ import classnames from "../util/classnames";
 import { authState } from "../util/state";
 import { useAsync } from "../hooks/useAsync";
 import { updateOwnProfile } from "../util/firebase";
+import { CardColor } from "./card";
 
 const CHARACTERS = [
   "mario",
@@ -20,10 +21,11 @@ const CHARACTERS = [
 
 function UserSettings() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { user } = authState.value;
+  const { user, cardColor } = authState.value;
   const [userProfileState, setUserProfile] = useState<MemberProfile>({
-    character: user?.photoURL ?? "",
     displayName: user?.displayName ?? "",
+    character: user?.photoURL ?? "",
+    cardColor,
   });
 
   const { invoke: saveUserSettings, isFetching: isUserSettingsSaving } =
@@ -57,6 +59,13 @@ function UserSettings() {
     setUserProfile((state) => ({
       ...state,
       character,
+    }));
+  };
+
+  const handleClickColor = (color: CardColor) => () => {
+    setUserProfile((state) => ({
+      ...state,
+      cardColor: color,
     }));
   };
 
@@ -101,6 +110,27 @@ function UserSettings() {
                   )}
                 ></i>
               ))}
+            </section>
+          </div>
+          <div>
+            <label>Select suit</label>
+            <section className="settings-colors-container">
+              {Object.values(CardColor)
+                .filter((v): v is CardColor => !isNaN(Number(v)))
+                .map((color: CardColor) => (
+                  <div className="nes-container is-centered settings-color-box">
+                    <button
+                      type="button"
+                      className={classnames(
+                        "nes-btn",
+                        `settings-color-box-${CardColor[color].toLowerCase()}`,
+                        userProfileState.cardColor === color && "is-disabled",
+                      )}
+                      disabled={userProfileState.cardColor === color}
+                      onClick={handleClickColor(color)}
+                    ></button>
+                  </div>
+                ))}
             </section>
           </div>
         </form>

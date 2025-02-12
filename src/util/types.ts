@@ -1,4 +1,4 @@
-import { CardRank } from "../components/card";
+import { CardColor, CardRank } from "../components/card";
 
 export interface RoomDetails {
   name: string;
@@ -29,4 +29,5 @@ export interface Round {
 export interface MemberProfile {
   displayName: string;
   character: string;
+  cardColor: CardColor;
 }

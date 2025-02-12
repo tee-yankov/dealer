@@ -1,6 +1,7 @@
 import { computed, Signal, signal } from "@preact/signals";
 import { User } from "firebase/auth";
 import { RoomDetails, RoomMember, Round } from "./types";
+import { CardColor } from "../components/card";
 
 export const notificationState = signal({
   needsPermission: false,
@@ -9,8 +10,10 @@ export const notificationState = signal({
 export const authState = signal<{
   displayName: string;
   user?: User;
+  cardColor: CardColor;
 }>({
   displayName: "(placeholder)",
+  cardColor: CardColor.Red,
 });
 
 export const roomState = signal<{

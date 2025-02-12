@@ -12,8 +12,9 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
-import { authState, roomState } from "./state";
+import { authState, roomState, updateState } from "./state";
 import { MemberProfile, RoomDetails, RoomMember, Round } from "./types";
+import { CardColor } from "../components/card";
 
 export enum Collections {
   Members = "members",
@@ -69,11 +70,12 @@ export async function createRoom(roomDetails: RoomDetails) {
   );
 
   // create host member record and provide offer
-  const { user } = authState.value;
+  const { user, cardColor } = authState.value;
   await createRoomMember(roomDocRef.id, {
     profile: {
       displayName: user?.displayName ?? "",
       character: user?.photoURL ?? "",
+      cardColor: cardColor,
     },
   });
 
@@ -108,7 +110,13 @@ export async function signIn() {
 
   authState.value = {
     ...authState.value,
-    user,
+    user: {
+      ...user,
+      photoURL: user.photoURL?.split(",")[0] ?? null,
+    },
+    cardColor: Number(
+      user.photoURL?.split(",")[1] ?? CardColor.Red,
+    ) as CardColor,
   };
 }
 
@@ -177,8 +185,12 @@ export async function updateOwnProfile(profile: MemberProfile) {
 
   await updateProfile(auth.currentUser!, {
     displayName: profile.displayName,
-    photoURL: profile.character,
+    photoURL: [profile.character || "mario", profile.cardColor].join(","),
   });
+
+  updateState(authState, () => ({
+    cardColor: profile.cardColor,
+  }));
 
   if (room) {
     await updateRoomMember(roomId!, { profile });

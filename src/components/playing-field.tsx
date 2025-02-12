@@ -1,7 +1,8 @@
 import "./playing-field.css";
 import { playerMembers, roundState } from "../util/state";
-import Card from "./card";
+import Card, { CardColor } from "./card";
 import { RoundStatus } from "../util/types";
+import ScaledText from "./scaled-text";
 
 function PlayingField() {
   const { currentRound } = roundState.value;
@@ -13,6 +14,7 @@ function PlayingField() {
           const card = currentRound?.cards?.[uid]?.card;
           const name = profile?.displayName || "(placeholder)";
           const character = profile?.character || "mario";
+          const suit = profile?.cardColor ?? CardColor.Red;
 
           return (
             <div key={uid} className="playing-field-slot-container">
@@ -23,13 +25,14 @@ function PlayingField() {
                   </div>
                 </div>
               )}
-              <p className="nes-text">{name}</p>
+              <ScaledText height="2rem" text={name} />
               <div className="nes-container is-rounded playing-field-slot">
                 <div className="playing-field-slot-content">
                   {card !== undefined && (
                     <Card
                       rank={card}
                       flipped={currentRound?.status === RoundStatus.Started}
+                      color={suit}
                     />
                   )}
                 </div>

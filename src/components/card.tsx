@@ -4,7 +4,7 @@ import classnames from "../util/classnames";
 import Shine from "./shine";
 
 const xOffset = 142;
-/* const yOffset = 190; */
+const yOffset = 190;
 
 const getRandomDifferentCard = (old: number) => {
   const result = Math.round(Math.random() * 13);
@@ -31,6 +31,13 @@ export enum CardRank {
   King = 11,
 }
 
+export enum CardColor {
+  Red = 0,
+  Green = 1,
+  Orange = 2,
+  Blue = 3,
+}
+
 export interface CardProps {
   rank: CardRank;
   animate?: boolean;
@@ -39,6 +46,7 @@ export interface CardProps {
   flipped?: boolean;
   disabled?: boolean;
   active?: boolean;
+  color?: CardColor;
 }
 
 function Card({
@@ -49,6 +57,7 @@ function Card({
   flipped = false,
   disabled = false,
   active = false,
+  color = CardColor.Red,
 }: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
   useEffect(() => {
@@ -102,8 +111,9 @@ function Card({
   const cardOffset = useMemo(
     () => ({
       backgroundPositionX: -cardIndex * xOffset,
+      backgroundPositionY: -color * yOffset,
     }),
-    [cardIndex],
+    [cardIndex, color],
   );
 
   return (
