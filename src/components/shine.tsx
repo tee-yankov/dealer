@@ -1,3 +1,4 @@
+import { useMemo } from "preact/hooks";
 import "./shine.css";
 
 function Shine({
@@ -7,17 +8,21 @@ function Shine({
   active?: boolean;
   amount?: number;
 }) {
-  const stars = [];
-  if (active) {
-    for (let i = 0; i < amount; i++) {
-      stars.push({
-        top: `${Math.random() * 70}%`,
-        left: `${Math.random() * 100}%`,
-        animationDelay: `${(Math.random() * amount) / 4}s`,
-        size: i % 2 === 0 ? "small" : i % 3 === 0 ? "medium" : "large",
-      });
+  const stars = useMemo(() => {
+    const stars = [];
+    if (active) {
+      for (let i = 0; i < amount; i++) {
+        stars.push({
+          top: `${Math.random() * 70}%`,
+          left: `${Math.random() * 100}%`,
+          animationDelay: `${(Math.random() * amount) / 4}s`,
+          size: i % 2 === 0 ? "small" : i % 3 === 0 ? "medium" : "large",
+        });
+      }
     }
-  }
+
+    return stars;
+  }, [active]);
 
   return (
     <div className="shine-container">
