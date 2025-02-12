@@ -44,3 +44,7 @@
 .settings-color-box-blue {
     background-position-y: -570px !important;
 }
+
+.user-settings-dialog {
+    background-color: #1c1b22;
+}

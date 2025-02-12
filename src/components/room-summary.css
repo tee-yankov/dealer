@@ -1,0 +1,6 @@
+.room-summary-container {
+    width: fit-content;
+    padding-top: 2rem !important;
+    transform: translateY(-1.5rem);
+    margin: 0 auto !important;
+}

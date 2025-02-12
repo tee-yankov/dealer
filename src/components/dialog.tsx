@@ -1,10 +1,12 @@
 import { PropsWithChildren, useEffect, useRef } from "preact/compat";
+import classnames from "../util/classnames";
 
 export type DialogProps = PropsWithChildren<{
   title?: string;
   isOpen?: boolean;
   onConfirm?: () => void;
   onCancel?: () => void;
+  className?: string;
 }>;
 
 function Dialog({
@@ -13,6 +15,7 @@ function Dialog({
   isOpen = false,
   onConfirm,
   onCancel,
+  className,
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openState = useRef(isOpen);
@@ -31,7 +34,7 @@ function Dialog({
 
   return (
     <section>
-      <dialog ref={dialogRef} class="nes-dialog">
+      <dialog ref={dialogRef} className={classnames(className, "nes-dialog")}>
         <form method="dialog">
           {title && <p class="title">{title}</p>}
           {children}

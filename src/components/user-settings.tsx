@@ -84,6 +84,7 @@ function UserSettings() {
         title="Settings"
         onCancel={handleClickSettings}
         onConfirm={handleSaveSettings}
+        className="user-settings-dialog"
       >
         <form onSubmit={handleSaveSettings}>
           <div class="nes-field">
