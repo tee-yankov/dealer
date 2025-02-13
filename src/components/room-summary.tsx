@@ -6,6 +6,8 @@ import classnames from "../util/classnames";
 import { RoundStatus } from "../util/types";
 import { capitalize } from "../util/capitalize";
 import { getRoundStats } from "../util/math";
+import ElapsedTime from "./elapsed-time";
+import { convertFirebaseDate } from "../util/firebase";
 
 function RoomSummary() {
   const { room } = roomState.value;
@@ -15,6 +17,8 @@ function RoomSummary() {
     currentRound?.status === RoundStatus.Ended
       ? getRoundStats(currentRound)
       : null;
+  const roundStartedAt =
+    currentRound?.createdAt && convertFirebaseDate(currentRound?.createdAt);
 
   return (
     <div className="nes-container is-rounded is-dark room-summary-container">
@@ -45,7 +49,13 @@ function RoomSummary() {
         </div>
       ) : (
         <div>
-          <p>&nbsp;</p>
+          <p>
+            {roundStartedAt ? (
+              <ElapsedTime since={roundStartedAt} />
+            ) : (
+              <span>&nbsp;</span>
+            )}
+          </p>
         </div>
       )}
     </div>

@@ -10,6 +10,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  getAggregateFromServer,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { authState, roomState, updateState } from "./state";
@@ -196,3 +197,6 @@ export async function updateOwnProfile(profile: MemberProfile) {
     await updateRoomMember(roomId!, { profile });
   }
 }
+
+export const convertFirebaseDate = (date: any): Date =>
+  new Date(Number(`${date?.seconds}${date?.nanoseconds / 1000000}`));
