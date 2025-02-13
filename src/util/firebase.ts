@@ -197,5 +197,4 @@ export async function updateOwnProfile(profile: MemberProfile) {
   }
 }
 
-export const convertFirebaseDate = (date: any): Date =>
-  new Date(Number(`${date?.seconds}${date?.nanoseconds / 1000000}`));
+export const convertFirebaseDate = (date: any): Date => date.toDate();

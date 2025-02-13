@@ -13,7 +13,6 @@ function ScaledText({
   text: string;
 }) {
   const [fontSize, setFontSize] = useState(1);
-  const [resizeCounter, setResizeCounter] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLSpanElement>(null);
 
@@ -23,20 +22,7 @@ function ScaledText({
     if (contentHeight > containerHeight) {
       setFontSize((height) => height * 0.9);
     }
-  }, [fontSize, resizeCounter, text]);
-
-  useEffect(() => {
-    const handler = debounce(
-      (_) => setResizeCounter((current) => current + 1),
-      100,
-    );
-
-    containerRef.current!.addEventListener("resize", handler);
-
-    return () => {
-      containerRef.current!.removeEventListener("resize", handler);
-    };
-  }, []);
+  }, [fontSize, text]);
 
   return (
     <div

@@ -17,3 +17,7 @@
 .layout-slot-reversed {
     align-self: end;
 }
+
+.layout-slot-overflow {
+    overflow: visible;
+}

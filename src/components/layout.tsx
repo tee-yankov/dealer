@@ -5,8 +5,19 @@ import { PropsWithChildren } from "preact/compat";
 export function LayoutSlot({
   children,
   className,
-}: PropsWithChildren<{ className?: string }>) {
-  return <div className={classnames("layout-slot", className)}>{children}</div>;
+  overflow = false,
+}: PropsWithChildren<{ className?: string; overflow?: boolean }>) {
+  return (
+    <div
+      className={classnames(
+        className,
+        "layout-slot",
+        overflow && "layout-slot-overflow",
+      )}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function Layout({

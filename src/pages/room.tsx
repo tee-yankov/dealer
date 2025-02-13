@@ -77,7 +77,7 @@ function RoomPage() {
       </div>
       {isRoomResolved && (
         <Layout className="page">
-          <LayoutSlot>
+          <LayoutSlot overflow>
             <RoomSummary />
           </LayoutSlot>
           <LayoutSlot>
