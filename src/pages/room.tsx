@@ -18,6 +18,8 @@ import UserSettings from "../components/user-settings";
 import { Layout, LayoutSlot } from "../components/layout";
 import { CardColor } from "../components/card";
 import RoomSummary from "../components/room-summary";
+import { DotDotDot } from "../components/animate-text";
+import classnames from "../util/classnames";
 
 function RoomPage() {
   const { roomId } = useParams();
@@ -51,26 +53,41 @@ function RoomPage() {
     <>
       <div className="status-light-container">
         <StatusLight
-          state={StatusLightStates.Good}
+          state={
+            isRoomResolved ? StatusLightStates.Good : StatusLightStates.Warning
+          }
           glowing
-          text={<span className="nes-text is-success text-sm">Connected</span>}
+          flashing={!isRoomResolved}
+          text={
+            <span
+              className={classnames(
+                "nes-text text-sm",
+                isRoomResolved ? "is-success" : "is-warning",
+              )}
+            >
+              {isRoomResolved ? "Connected" : "Connecting"}
+              {!isRoomResolved && <DotDotDot />}
+            </span>
+          }
         />
       </div>
       <div className="room-top-right-container">
         <UserSettings />
-        <MembersList />
+        {isRoomResolved && <MembersList />}
       </div>
-      <Layout className="page">
-        <LayoutSlot>
-          <RoomSummary />
-        </LayoutSlot>
-        <LayoutSlot>
-          <PlayingField />
-        </LayoutSlot>
-        <LayoutSlot className="layout-slot-reversed">
-          {isRoomHost.value ? <HostControls /> : <Hand />}
-        </LayoutSlot>
-      </Layout>
+      {isRoomResolved && (
+        <Layout className="page">
+          <LayoutSlot>
+            <RoomSummary />
+          </LayoutSlot>
+          <LayoutSlot>
+            <PlayingField />
+          </LayoutSlot>
+          <LayoutSlot className="layout-slot-reversed">
+            {isRoomHost.value ? <HostControls /> : <Hand />}
+          </LayoutSlot>
+        </Layout>
+      )}
     </>
   );
 }
