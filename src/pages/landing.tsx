@@ -7,6 +7,7 @@ import { DotDotDot } from "../components/animate-text";
 import classnames from "../util/classnames";
 import { createRoom } from "../util/firebase";
 import { authState } from "../util/state";
+import TitleText from "../components/title-text";
 
 function LandingPage() {
   const [roomName, setRoomName] = useState("");
@@ -45,7 +46,7 @@ function LandingPage() {
 
   return (
     <div className="page page-landing">
-      <h1 className="title-text">Dealer</h1>
+      <TitleText />
       <div className="page-content">
         <div className="card-logo-container">
           <Card rank={CardRank.Ace} animate />
