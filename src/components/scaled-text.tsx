@@ -1,5 +1,4 @@
 import classnames from "../util/classnames";
-import debounce from "../util/debounce";
 import "./scaled-text.css";
 import { useEffect, useRef, useState } from "preact/compat";
 
