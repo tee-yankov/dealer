@@ -11,6 +11,10 @@ export const authState = signal<{
   displayName: string;
   user?: User;
   cardColor: CardColor;
+  requireUserSetting?: {
+    onConfirm: () => void;
+    onCancel: () => void;
+  };
 }>({
   displayName: "(placeholder)",
   cardColor: CardColor.Red,

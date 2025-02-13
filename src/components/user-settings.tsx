@@ -20,8 +20,9 @@ const CHARACTERS = [
 ];
 
 function UserSettings() {
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const { user, cardColor } = authState.value;
+  const { user, cardColor, requireUserSetting } = authState.value;
+  const [_isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const isSettingsOpen = _isSettingsOpen || Boolean(requireUserSetting);
   const [userProfileState, setUserProfile] = useState<MemberProfile>({
     displayName: user?.displayName ?? "",
     character: user?.photoURL ?? "",
@@ -35,11 +36,17 @@ function UserSettings() {
     setIsSettingsOpen((isOpen) => !isOpen);
   }, [setIsSettingsOpen]);
 
+  const handleCancelSettings = useCallback(() => {
+    setIsSettingsOpen(false);
+    requireUserSetting?.onCancel?.();
+  }, [setIsSettingsOpen]);
+
   const handleSaveSettings = useCallback(
     (e?: any) => {
       e?.preventDefault();
       setIsSettingsOpen(false);
       saveUserSettings(userProfileState);
+      requireUserSetting?.onConfirm?.();
     },
     [userProfileState],
   );
@@ -81,9 +88,13 @@ function UserSettings() {
 
       <Dialog
         isOpen={isSettingsOpen}
-        title="Settings"
-        onCancel={handleClickSettings}
+        title={
+          requireUserSetting ? "Please enter your name and confirm" : "Settings"
+        }
+        onCancel={handleCancelSettings}
         onConfirm={handleSaveSettings}
+        disabledCancel={Boolean(requireUserSetting)}
+        disabledConfirm={!userProfileState.displayName}
         className="user-settings-dialog"
       >
         <form onSubmit={handleSaveSettings}>

@@ -4,7 +4,7 @@ import Hand from "../components/hand";
 import StatusLight, { StatusLightStates } from "../components/status-light";
 import { useEffect } from "preact/hooks";
 import { createRoomMember, fetchRoom } from "../util/firebase";
-import { authState, isRoomHost } from "../util/state";
+import { authState, isRoomHost, updateState } from "../util/state";
 import { useAsync } from "../hooks/useAsync";
 import PlayingField from "../components/playing-field";
 import {
@@ -29,6 +29,20 @@ function RoomPage() {
   const { invoke: handleRoom } = useAsync(async () => {
     if (!isRoomHost.value) {
       const { user, cardColor } = authState.value;
+      if (!user?.displayName) {
+        await new Promise((resolve, reject) => {
+          updateState(authState, () => ({
+            requireUserSetting: {
+              onConfirm: () => resolve(null),
+              onCancel: () =>
+                reject(new Error("user declined to provide name")),
+            },
+          }));
+        });
+        updateState(authState, () => ({
+          requireUserSetting: undefined,
+        }));
+      }
       await createRoomMember(roomId!, {
         profile: {
           displayName: user?.displayName ?? "",

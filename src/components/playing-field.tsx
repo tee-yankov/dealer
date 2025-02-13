@@ -12,7 +12,7 @@ function PlayingField() {
       <div className="playing-field-container">
         {Object.entries(playerMembers.value).map(([uid, { profile }]) => {
           const card = currentRound?.cards?.[uid]?.card;
-          const name = profile?.displayName || "(placeholder)";
+          const name = profile?.displayName || "...";
           const character = profile?.character || "mario";
           const suit = profile?.cardColor ?? CardColor.Red;
 

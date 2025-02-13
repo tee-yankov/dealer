@@ -183,12 +183,15 @@ export async function updateRound(
 export async function updateOwnProfile(profile: MemberProfile) {
   const { room, roomId } = roomState.value;
 
-  await updateProfile(auth.currentUser!, {
+  const newUser = {
     displayName: profile.displayName,
     photoURL: [profile.character || "mario", profile.cardColor].join(","),
-  });
+  };
+
+  await updateProfile(auth.currentUser!, newUser);
 
   updateState(authState, () => ({
+    displayName: profile.displayName,
     cardColor: profile.cardColor,
   }));
 

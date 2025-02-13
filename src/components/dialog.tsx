@@ -7,6 +7,8 @@ export type DialogProps = PropsWithChildren<{
   onConfirm?: () => void;
   onCancel?: () => void;
   className?: string;
+  disabledCancel?: boolean;
+  disabledConfirm?: boolean;
 }>;
 
 function Dialog({
@@ -16,6 +18,8 @@ function Dialog({
   onConfirm,
   onCancel,
   className,
+  disabledCancel = false,
+  disabledConfirm = false,
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openState = useRef(isOpen);
@@ -39,10 +43,21 @@ function Dialog({
           {title && <p class="title">{title}</p>}
           {children}
           <menu class="dialog-menu">
-            <button onClick={onCancel} class="nes-btn">
+            <button
+              disabled={disabledCancel}
+              onClick={onCancel}
+              className={classnames("nes-btn", disabledCancel && "is-disabled")}
+            >
               Cancel
             </button>
-            <button onClick={onConfirm} class="nes-btn is-primary">
+            <button
+              disabled={disabledConfirm}
+              onClick={onConfirm}
+              className={classnames(
+                "nes-btn is-primary",
+                disabledConfirm && "is-disabled",
+              )}
+            >
               Confirm
             </button>
           </menu>
