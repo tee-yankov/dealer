@@ -21,7 +21,6 @@ function TitleText() {
     <h1 className="title-text">
       {TITLE.map((char, i) => (
         <span
-          key={char}
           className={classnames(charIndex === i && "title-text-highlighted")}
         >
           {char}

@@ -48,6 +48,10 @@ export const playerMembers = computed(() =>
   ),
 );
 
+export const hasJoinedRoom = computed(() =>
+  roomState.value.members.hasOwnProperty(authState.value.user?.uid ?? ""),
+);
+
 export function updateState<T>(s: Signal<T>, updater: (s: T) => Partial<T>): T {
   s.value = {
     ...s.value,

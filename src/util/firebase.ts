@@ -10,6 +10,7 @@ import {
   getDocs,
   setDoc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
 import { authState, roomState, updateState } from "./state";
@@ -201,3 +202,7 @@ export async function updateOwnProfile(profile: MemberProfile) {
 }
 
 export const convertFirebaseDate = (date: any): Date => date.toDate();
+
+export async function removeRoomMember(roomId: string, uid: string) {
+  await deleteDoc(getRoomMemberKey(roomId, uid));
+}

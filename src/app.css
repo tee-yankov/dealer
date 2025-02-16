@@ -115,3 +115,11 @@ body {
     0px 20px
   );
 }
+
+.nes-icon.close::before {
+  color: #e76e55;
+}
+
+.button-kick-member {
+  margin-right: 1rem;
+}

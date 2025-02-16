@@ -4,7 +4,12 @@ import Hand from "../components/hand";
 import StatusLight, { StatusLightStates } from "../components/status-light";
 import { useEffect } from "preact/hooks";
 import { createRoomMember, fetchRoom } from "../util/firebase";
-import { authState, isRoomHost, updateState } from "../util/state";
+import {
+  authState,
+  hasJoinedRoom,
+  isRoomHost,
+  updateState,
+} from "../util/state";
 import { useAsync } from "../hooks/useAsync";
 import PlayingField from "../components/playing-field";
 import {
@@ -68,7 +73,11 @@ function RoomPage() {
       <div className="status-light-container">
         <StatusLight
           state={
-            isRoomResolved ? StatusLightStates.Good : StatusLightStates.Warning
+            isRoomResolved
+              ? hasJoinedRoom.value
+                ? StatusLightStates.Good
+                : StatusLightStates.Bad
+              : StatusLightStates.Warning
           }
           glowing
           flashing={!isRoomResolved}
@@ -76,10 +85,18 @@ function RoomPage() {
             <span
               className={classnames(
                 "nes-text text-sm",
-                isRoomResolved ? "is-success" : "is-warning",
+                isRoomResolved
+                  ? hasJoinedRoom.value
+                    ? "is-success"
+                    : "is-error"
+                  : "is-warning",
               )}
             >
-              {isRoomResolved ? "Connected" : "Connecting"}
+              {isRoomResolved
+                ? hasJoinedRoom.value
+                  ? "Connected"
+                  : "Disconnected"
+                : "Connecting"}
               {!isRoomResolved && <DotDotDot />}
             </span>
           }
@@ -89,7 +106,7 @@ function RoomPage() {
         <UserSettings />
         {isRoomResolved && <MembersList />}
       </div>
-      {isRoomResolved && (
+      {isRoomResolved && hasJoinedRoom.value && (
         <Layout className="page">
           <LayoutSlot overflow>
             <RoomSummary />

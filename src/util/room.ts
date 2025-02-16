@@ -1,5 +1,5 @@
 import { deleteField, QuerySnapshot } from "firebase/firestore";
-import { createRound, updateRound } from "./firebase";
+import { createRound, removeRoomMember, updateRound } from "./firebase";
 import { authState, roomState, roundState, updateState } from "./state";
 import { RoomMember, Round, RoundStatus } from "./types";
 import { CardRank } from "../components/card";
@@ -78,4 +78,8 @@ export async function handleRoomRoundsChange(snapshot: QuerySnapshot) {
     currentRound,
     previousRounds: rounds,
   }));
+}
+
+export async function handleRoomMemberKick(roomId: string, uid: string) {
+  return removeRoomMember(roomId, uid);
 }
