@@ -38,7 +38,11 @@ function Dialog({
 
   return (
     <section>
-      <dialog ref={dialogRef} className={classnames(className, "nes-dialog")}>
+      <dialog
+        style={{ overflow: "hidden" }}
+        ref={dialogRef}
+        className={classnames(className, "nes-dialog")}
+      >
         <form method="dialog">
           {title && <p class="title">{title}</p>}
           {children}

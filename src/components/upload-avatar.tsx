@@ -91,6 +91,9 @@ function UploadAvatar({ onChange, label, current }: UploadAvatarProps) {
     };
   }, []);
 
+  const resultSrc =
+    result ?? (current?.startsWith("data") ? current : undefined);
+
   return (
     <div className="upload-avatar-container">
       <label className="nes-btn upload-avatar-btn">
@@ -108,11 +111,7 @@ function UploadAvatar({ onChange, label, current }: UploadAvatarProps) {
         <canvas ref={canvasRef} />
       </div>
 
-      <div>
-        <img
-          src={(result ?? current?.startsWith("data")) ? current : undefined}
-        />
-      </div>
+      <div>{resultSrc && <img src={resultSrc} />}</div>
     </div>
   );
 }
