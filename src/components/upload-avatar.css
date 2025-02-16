@@ -1,0 +1,14 @@
+.upload-avatar-container {
+    text-align: center;
+}
+
+.upload-avatar-offscreen {
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.upload-avatar-btn {
+    margin-bottom: 1rem;
+}

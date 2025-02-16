@@ -113,10 +113,10 @@ export async function signIn() {
     ...authState.value,
     user: {
       ...user,
-      photoURL: user.photoURL?.split(",")[0] ?? null,
+      photoURL: user.photoURL?.split("|")[0] ?? null,
     },
     cardColor: Number(
-      user.photoURL?.split(",")[1] ?? CardColor.Red,
+      user.photoURL?.split("|")[1] ?? CardColor.Red,
     ) as CardColor,
   };
 }
@@ -186,7 +186,7 @@ export async function updateOwnProfile(profile: MemberProfile) {
 
   const newUser = {
     displayName: profile.displayName,
-    photoURL: [profile.character || "mario", profile.cardColor].join(","),
+    photoURL: [profile.character || "mario", profile.cardColor].join("|"),
   };
 
   await updateProfile(auth.currentUser!, newUser);

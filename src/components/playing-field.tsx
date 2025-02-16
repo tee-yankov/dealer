@@ -3,6 +3,7 @@ import { playerMembers, roundState } from "../util/state";
 import Card, { CardColor } from "./card";
 import { RoundStatus } from "../util/types";
 import ScaledText from "./scaled-text";
+import classnames from "../util/classnames";
 
 function PlayingField() {
   const { currentRound } = roundState.value;
@@ -20,8 +21,17 @@ function PlayingField() {
             <div key={uid} className="playing-field-slot-container">
               {character && (
                 <div className="avatar-wrapper">
-                  <div className="avatar">
-                    <i className={`nes-${character}`}></i>
+                  <div
+                    className={classnames(
+                      "avatar",
+                      character.startsWith("data") && "avatar-img",
+                    )}
+                  >
+                    {character.startsWith("data") ? (
+                      <img src={character} />
+                    ) : (
+                      <i className={`nes-${character}`}></i>
+                    )}
                   </div>
                 </div>
               )}

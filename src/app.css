@@ -75,6 +75,15 @@ body {
   transform: scale(0.5) translateY(-50%);
 }
 
+.avatar-img {
+  transform: none;
+}
+
+.avatar img {
+  width: auto;
+  height: 100%;
+}
+
 .avatar-wrapper {
   clip-path: polygon(
     0px calc(100% - 20px),

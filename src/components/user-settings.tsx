@@ -8,6 +8,7 @@ import { authState } from "../util/state";
 import { useAsync } from "../hooks/useAsync";
 import { updateOwnProfile } from "../util/firebase";
 import { CardColor } from "./card";
+import UploadAvatar from "./upload-avatar";
 
 const CHARACTERS = [
   "mario",
@@ -69,6 +70,13 @@ function UserSettings() {
     }));
   };
 
+  const handleUploadCharacter = useCallback((data: string) => {
+    setUserProfile((state) => ({
+      ...state,
+      character: data,
+    }));
+  }, []);
+
   const handleClickColor = (color: CardColor) => () => {
     setUserProfile((state) => ({
       ...state,
@@ -123,6 +131,12 @@ function UserSettings() {
                 ></i>
               ))}
             </section>
+            <h2>-- OR --</h2>
+            <UploadAvatar
+              onChange={handleUploadCharacter}
+              label="Use your own"
+              current={userProfileState.character}
+            />
           </div>
           <div>
             <label>Select suit</label>
