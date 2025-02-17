@@ -71,7 +71,19 @@ function UploadAvatar({ onChange, label, current }: UploadAvatarProps) {
       img.height,
     );
 
-    const data = canvas.toDataURL("image/webp", 0.5);
+    let quality = 1.0;
+    let data = canvas.toDataURL("image/webp", quality);
+    let iterations = 0;
+    while (data.length > 2000) {
+      if (iterations > 9) {
+        break;
+      }
+
+      quality /= 2;
+      data = canvas.toDataURL("image/webp", quality);
+      console.log("requality image", quality, data.length);
+      iterations += 1;
+    }
     setResult(data);
     if (onChange) {
       onChange(data);
