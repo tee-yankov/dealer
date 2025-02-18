@@ -25,3 +25,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+
+.playing-field-slot-container-disconnected {
+    opacity: 0.2;
+}

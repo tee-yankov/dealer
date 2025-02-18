@@ -1,8 +1,21 @@
 import { deleteField, QuerySnapshot } from "firebase/firestore";
-import { createRound, removeRoomMember, updateRound } from "./firebase";
-import { authState, roomState, roundState, updateState } from "./state";
+import {
+  createRound,
+  getStatusRef,
+  removeRoomMember,
+  updateRound,
+} from "./firebase";
+import {
+  authState,
+  isRoomHost,
+  roomState,
+  roundState,
+  updateState,
+  userOnlineStatus,
+} from "./state";
 import { RoomMember, Round, RoundStatus } from "./types";
 import { CardRank } from "../components/card";
+import { onValue } from "firebase/database";
 
 export async function startNewRound() {
   const round: Round = {
@@ -52,10 +65,32 @@ export async function selectCardForCurrentRound(card: CardRank) {
   }
 }
 
+const roomMemberListeners: Record<string, any> = {};
+const listenForRoomMemberStatus = (userId: string) => {
+  if (roomMemberListeners[userId]) {
+    return;
+  }
+
+  roomMemberListeners[userId] = onValue(getStatusRef(userId), (snapshot) => {
+    const isOnline = snapshot.val();
+    updateState(userOnlineStatus, (state) => ({
+      ...state,
+      [userId]: isOnline,
+    }));
+    console.log(`User ${userId} ${isOnline ? "connected" : "disconnected"}`);
+  });
+};
+
 export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
-  // for (const change of snapshot.docChanges()) {
-  //   console.log(change.type, change.doc.id, change.doc.data());
-  // }
+  for (const change of snapshot.docChanges()) {
+    if (
+      change.type === "added" &&
+      change.doc.id !== authState.value.user?.uid &&
+      isRoomHost.value
+    ) {
+      listenForRoomMemberStatus(change.doc.id);
+    }
+  }
 
   updateState(roomState, () => ({
     members: Object.fromEntries(
@@ -81,5 +116,11 @@ export async function handleRoomRoundsChange(snapshot: QuerySnapshot) {
 }
 
 export async function handleRoomMemberKick(roomId: string, uid: string) {
+  // remove user status listener
+  if (uid) {
+    roomMemberListeners[uid]?.();
+    delete roomMemberListeners[uid];
+  }
+
   return removeRoomMember(roomId, uid);
 }

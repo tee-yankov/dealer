@@ -35,6 +35,8 @@ export const roundState = signal<{
   previousRounds: [],
 });
 
+export const userOnlineStatus = signal<Record<string, boolean>>({});
+
 // Derived state
 export const isRoomHost = computed(
   () => roomState.value.room?.uid === authState.value.user?.uid,

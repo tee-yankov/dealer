@@ -6,7 +6,7 @@ function ElapsedTime({ since }: { since: Date }) {
   const diff = now.getTime() - since.getTime();
   const [minutes, seconds] = [
     Math.floor(diff / 1000 / 60),
-    Math.round(diff / 1000) % 60,
+    Math.floor(diff / 1000) % 60,
   ];
 
   useEffect(() => {

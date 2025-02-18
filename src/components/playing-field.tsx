@@ -1,5 +1,10 @@
 import "./playing-field.css";
-import { playerMembers, roundState } from "../util/state";
+import {
+  isRoomHost,
+  playerMembers,
+  roundState,
+  userOnlineStatus,
+} from "../util/state";
 import Card, { CardColor } from "./card";
 import { RoundStatus } from "../util/types";
 import ScaledText from "./scaled-text";
@@ -7,6 +12,7 @@ import classnames from "../util/classnames";
 
 function PlayingField() {
   const { currentRound } = roundState.value;
+  const memberStatus = userOnlineStatus.value;
 
   return (
     <>
@@ -18,7 +24,15 @@ function PlayingField() {
           const suit = profile?.cardColor ?? CardColor.Red;
 
           return (
-            <div key={uid} className="playing-field-slot-container">
+            <div
+              key={uid}
+              className={classnames(
+                "playing-field-slot-container",
+                isRoomHost.value &&
+                  !memberStatus[uid] &&
+                  "playing-field-slot-container-disconnected",
+              )}
+            >
               {character && (
                 <div className="avatar-wrapper">
                   <div
