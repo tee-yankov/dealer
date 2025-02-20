@@ -13,7 +13,13 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { getAuth, signInAnonymously, updateProfile } from "firebase/auth";
-import { getDatabase, ref, onDisconnect, set } from "firebase/database";
+import {
+  getDatabase,
+  ref,
+  onDisconnect,
+  set,
+  onValue,
+} from "firebase/database";
 import { authState, roomState, updateState } from "./state";
 import { MemberProfile, RoomDetails, RoomMember, Round } from "./types";
 import { CardColor } from "../components/card";
@@ -40,6 +46,7 @@ const rdb = getDatabase(
   app,
   "https://dealer-b7cfb-default-rtdb.europe-west1.firebasedatabase.app/",
 );
+const connectedRef = ref(rdb, ".info/connected");
 
 export const getStatusRef = (userId: string) => ref(rdb, `/status/${userId}`);
 
@@ -60,8 +67,14 @@ export async function initializeFirebase() {
   await signIn();
 
   const statusRef = getStatusRef(authState.value.user?.uid!);
-  await set(statusRef, true);
-  onDisconnect(statusRef).set(false);
+  onValue(connectedRef, async (snapshot) => {
+    const isConnected = snapshot.val();
+    if (isConnected) {
+      onDisconnect(statusRef).set(false);
+
+      set(statusRef, snapshot.val());
+    }
+  });
 
   initialized = true;
   resolveCb!();
