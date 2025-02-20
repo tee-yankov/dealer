@@ -7,7 +7,6 @@ import {
 } from "./firebase";
 import {
   authState,
-  isRoomHost,
   roomState,
   roundState,
   updateState,
@@ -85,8 +84,7 @@ export async function handleRoomMembersChange(snapshot: QuerySnapshot) {
   for (const change of snapshot.docChanges()) {
     if (
       change.type === "added" &&
-      change.doc.id !== authState.value.user?.uid &&
-      isRoomHost.value
+      change.doc.id !== authState.value.user?.uid
     ) {
       listenForRoomMemberStatus(change.doc.id);
     }

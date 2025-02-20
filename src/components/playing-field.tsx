@@ -1,6 +1,6 @@
 import "./playing-field.css";
 import {
-  isRoomHost,
+  authState,
   playerMembers,
   roundState,
   userOnlineStatus,
@@ -28,7 +28,7 @@ function PlayingField() {
               key={uid}
               className={classnames(
                 "playing-field-slot-container",
-                isRoomHost.value &&
+                authState.value.user?.uid !== uid &&
                   !memberStatus[uid] &&
                   "playing-field-slot-container-disconnected",
               )}
