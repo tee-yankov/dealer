@@ -12,9 +12,9 @@ export const cardRankToCardValueMap: Record<CardRank, number> = {
   [CardRank.Eight]: 8,
   [CardRank.Nine]: 9,
   [CardRank.Ten]: 10,
-  [CardRank.Jack]: 11,
-  [CardRank.Queen]: 18,
-  [CardRank.King]: 29,
+  [CardRank.Jack]: 13,
+  [CardRank.Queen]: 21,
+  [CardRank.King]: 34,
 };
 
 export const avg = (numbers: number[]) =>

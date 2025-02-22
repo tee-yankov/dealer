@@ -20,7 +20,7 @@ import {
   set,
   onValue,
 } from "firebase/database";
-import { authState, roomState, updateState } from "./state";
+import { authState, roomState, updateState, userOnlineStatus } from "./state";
 import { MemberProfile, RoomDetails, RoomMember, Round } from "./types";
 import { CardColor } from "../components/card";
 
@@ -66,7 +66,8 @@ export async function initializeFirebase() {
 
   await signIn();
 
-  const statusRef = getStatusRef(authState.value.user?.uid!);
+  const uid = authState.value.user?.uid!;
+  const statusRef = getStatusRef(uid);
   onValue(connectedRef, async (snapshot) => {
     const isConnected = snapshot.val();
     if (isConnected) {
@@ -74,6 +75,11 @@ export async function initializeFirebase() {
 
       set(statusRef, snapshot.val());
     }
+
+    updateState(userOnlineStatus, (state) => ({
+      ...state,
+      [uid]: isConnected,
+    }));
   });
 
   initialized = true;

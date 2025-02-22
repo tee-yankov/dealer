@@ -5,7 +5,7 @@ import { RoundStatus } from "../util/types";
 import { useAsync } from "../hooks/useAsync";
 import { selectCardForCurrentRound } from "../util/room";
 
-const HAND_CARDS = [
+export const HAND_CARDS = [
   CardRank.Ace,
   CardRank.Two,
   CardRank.Three,

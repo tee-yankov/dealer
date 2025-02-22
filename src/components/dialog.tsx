@@ -1,3 +1,4 @@
+import "./dialog.css";
 import { PropsWithChildren, useEffect, useRef } from "preact/compat";
 import classnames from "../util/classnames";
 
@@ -9,6 +10,8 @@ export type DialogProps = PropsWithChildren<{
   className?: string;
   disabledCancel?: boolean;
   disabledConfirm?: boolean;
+  confirmText?: string;
+  cancelText?: string;
 }>;
 
 function Dialog({
@@ -20,6 +23,8 @@ function Dialog({
   className,
   disabledCancel = false,
   disabledConfirm = false,
+  cancelText = "Cancel",
+  confirmText = "Confirm",
 }: DialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const openState = useRef(isOpen);
@@ -47,23 +52,30 @@ function Dialog({
           {title && <p class="title">{title}</p>}
           {children}
           <menu class="dialog-menu">
-            <button
-              disabled={disabledCancel}
-              onClick={onCancel}
-              className={classnames("nes-btn", disabledCancel && "is-disabled")}
-            >
-              Cancel
-            </button>
-            <button
-              disabled={disabledConfirm}
-              onClick={onConfirm}
-              className={classnames(
-                "nes-btn is-primary",
-                disabledConfirm && "is-disabled",
-              )}
-            >
-              Confirm
-            </button>
+            {onCancel && (
+              <button
+                disabled={disabledCancel}
+                onClick={onCancel}
+                className={classnames(
+                  "nes-btn",
+                  disabledCancel && "is-disabled",
+                )}
+              >
+                {cancelText}
+              </button>
+            )}
+            {onConfirm && (
+              <button
+                disabled={disabledConfirm}
+                onClick={onConfirm}
+                className={classnames(
+                  "nes-btn is-primary",
+                  disabledConfirm && "is-disabled",
+                )}
+              >
+                {confirmText}
+              </button>
+            )}
           </menu>
         </form>
       </dialog>

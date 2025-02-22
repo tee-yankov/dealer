@@ -47,6 +47,7 @@ export interface CardProps {
   disabled?: boolean;
   active?: boolean;
   color?: CardColor;
+  small?: boolean;
 }
 
 function Card({

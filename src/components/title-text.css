@@ -30,6 +30,8 @@
 .title-text-highlighted {
     color: hsl(var(--hue) 90% 100%);
     text-shadow:
+        0 0 20px hsl(var(--hue) 70% 95%),
+        0 0 30px hsl(var(--hue) 70% 95%),
         calc(var(--x-quadrant) * 10px) calc(var(--y-quadrant) * 10px) 0
             hsl(var(--hue) 70% 95%),
         calc(var(--x-quadrant) * 20px) calc(var(--y-quadrant) * 20px) 0

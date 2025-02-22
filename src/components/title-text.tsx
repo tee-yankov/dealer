@@ -9,7 +9,7 @@ function TitleText() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setCharIndex((current) => (current + 1) % TITLE.length);
+      setCharIndex((current) => (current + 1) % (TITLE.length + 6));
     }, 1000);
 
     return () => {
@@ -21,7 +21,13 @@ function TitleText() {
     <h1 className="title-text">
       {TITLE.map((char, i) => (
         <span
-          className={classnames(charIndex === i && "title-text-highlighted")}
+          className={classnames(
+            (charIndex === i ||
+              charIndex === TITLE.length ||
+              charIndex === TITLE.length + 2 ||
+              charIndex === TITLE.length + 4) &&
+              "title-text-highlighted",
+          )}
         >
           {char}
         </span>

@@ -7,6 +7,7 @@ import { createRoomMember, fetchRoom } from "../util/firebase";
 import {
   authState,
   hasJoinedRoom,
+  isConnected,
   isRoomHost,
   updateState,
 } from "../util/state";
@@ -73,31 +74,31 @@ function RoomPage() {
       <div className="status-light-container">
         <StatusLight
           state={
-            isRoomResolved
+            isRoomResolved && isConnected.value
               ? hasJoinedRoom.value
                 ? StatusLightStates.Good
                 : StatusLightStates.Bad
               : StatusLightStates.Warning
           }
           glowing
-          flashing={!isRoomResolved}
+          flashing={!isRoomResolved || !isConnected.value}
           text={
             <span
               className={classnames(
                 "nes-text text-sm",
-                isRoomResolved
+                isRoomResolved && isConnected.value
                   ? hasJoinedRoom.value
                     ? "is-success"
                     : "is-error"
                   : "is-warning",
               )}
             >
-              {isRoomResolved
+              {isRoomResolved && isConnected.value
                 ? hasJoinedRoom.value
                   ? "Connected"
                   : "Disconnected"
                 : "Connecting"}
-              {!isRoomResolved && <DotDotDot />}
+              {(!isRoomResolved || !isConnected.value) && <DotDotDot />}
             </span>
           }
         />

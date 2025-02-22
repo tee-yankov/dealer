@@ -1,0 +1,44 @@
+.help-container {
+    overflow: hidden;
+    position: absolute;
+    bottom: 1rem;
+    right: 0;
+    transform: translateX(20%);
+    z-index: 1;
+}
+
+.help-inner-container {
+    background-color: #ffc118;
+    font-size: 2em;
+    padding: 0.25rem 0.5rem !important;
+    transform: translateX(1rem);
+}
+
+.help-inner-container:hover {
+    background-color: #f7d51d;
+}
+
+.help-card-values-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.help-card-item {
+    margin-right: 1rem;
+    text-align: center;
+}
+
+.help-card-item:last-child {
+    margin-right: 0;
+}
+
+.help-card-label {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.help-button-text {
+    display: inline-block;
+    transform: translateX(-0.5rem);
+}
