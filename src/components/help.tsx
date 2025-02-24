@@ -33,7 +33,7 @@ function Help() {
               <span className="help-card-label help-card-label">
                 {cardRankToCardValueMap[rank]}
               </span>
-              <Card rank={rank} small />
+              <Card rank={rank} scaled />
             </div>
           ))}
         </div>

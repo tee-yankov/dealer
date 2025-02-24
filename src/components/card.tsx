@@ -48,6 +48,7 @@ export interface CardProps {
   active?: boolean;
   color?: CardColor;
   small?: boolean;
+  scaled?: boolean;
 }
 
 function Card({
@@ -59,6 +60,7 @@ function Card({
   disabled = false,
   active = false,
   color = CardColor.Red,
+  scaled = false,
 }: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
   useEffect(() => {
@@ -124,6 +126,7 @@ function Card({
         "card-container",
         disabled && "card-container-disabled",
         className,
+        scaled && "card-container-scaled",
       )}
     >
       <div
@@ -133,13 +136,19 @@ function Card({
           flipped && "card-inner-container-flipped",
           animate && "card-inner-container-animated",
           active && "card-inner-container-active",
+          scaled && "card-inner-container-scaled",
         )}
       >
         <div
-          className="card card-front card-pixel-corners"
+          className={classnames(
+            "card card-front card-pixel-corners",
+            scaled && "card-scaled",
+          )}
           style={cardOffset}
         />
-        <div className="card card-back"></div>
+        <div
+          className={classnames("card card-back", scaled && "card-scaled")}
+        ></div>
         <Shine active={active} />
       </div>
     </div>

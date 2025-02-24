@@ -38,18 +38,13 @@
 .help-card-label {
     display: block;
     margin-bottom: 0.5rem;
-    font-size: 2em;
+    font-size: 1.5em;
     background-clip: text;
     color: var(--gold);
     grid-area: overlap;
     letter-spacing: 1px;
-    -webkit-text-stroke: 4px transparent;
-    background-image: repeating-linear-gradient(
-        5deg,
-        var(--gold) 0%,
-        var(--light-shadow) 23%,
-        var(--gold) 31%
-    );
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: #fafafa;
 }
 
 .help-button-text {

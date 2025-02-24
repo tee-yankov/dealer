@@ -7,6 +7,11 @@
     overflow: hidden;
 }
 
+.card-scaled {
+    transform: scale(0.5);
+    transform-origin: top left;
+}
+
 .card-front {
     background: url("../assets/8BitDeck.webp");
     background-color: white;
@@ -35,6 +40,11 @@
     transform-style: preserve-3d;
     transition: transform 0.4s ease-in-out;
     will-change: transform;
+}
+
+.card-container-scaled {
+    width: 71px;
+    height: 95px;
 }
 
 .card-inner-container-flipped {
