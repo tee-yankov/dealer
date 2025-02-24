@@ -89,8 +89,9 @@
     animation-duration: 2000ms;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;
+    animation-delay: 0.4s;
     transform-origin: bottom center;
-    transition: transform 0.1s ease-in;
+    transition: transform 0.4s ease-in;
     transform: rotateZ(calc(var(--ambientAmount) * 10deg));
     width: 100%;
 }
