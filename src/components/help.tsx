@@ -30,7 +30,7 @@ function Help() {
         <div className="help-card-values-container">
           {HAND_CARDS.map((rank) => (
             <div key={rank} className="help-card-item">
-              <span className="help-card-label neon-gold">
+              <span className="help-card-label help-card-label">
                 {cardRankToCardValueMap[rank]}
               </span>
               <Card rank={rank} small />

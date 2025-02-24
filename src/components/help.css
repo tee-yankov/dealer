@@ -5,6 +5,8 @@
     right: 0;
     transform: translateX(20%);
     z-index: 1;
+
+    --gold: gold;
 }
 
 .help-inner-container {
@@ -34,8 +36,20 @@
 }
 
 .help-card-label {
-    display: inline-block;
+    display: block;
     margin-bottom: 0.5rem;
+    font-size: 2em;
+    background-clip: text;
+    color: var(--gold);
+    grid-area: overlap;
+    letter-spacing: 1px;
+    -webkit-text-stroke: 4px transparent;
+    background-image: repeating-linear-gradient(
+        5deg,
+        var(--gold) 0%,
+        var(--light-shadow) 23%,
+        var(--gold) 31%
+    );
 }
 
 .help-button-text {

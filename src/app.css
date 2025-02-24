@@ -135,14 +135,3 @@ body {
 .button-kick-member {
   margin-right: 1rem;
 }
-
-.neon-gold {
-  color: #f7d51d;
-  text-shadow:
-    0 0 5px #f7d51d,
-    0 0 10px #f7d51d,
-    0 0 20px white,
-    0 0 30px white;
-  font-size: 3em;
-  text-transform: uppercase;
-}
