@@ -46,7 +46,7 @@ function Dialog({
       <dialog
         style={{ overflow: "hidden" }}
         ref={dialogRef}
-        className={classnames(className, "nes-dialog")}
+        className={classnames(className, "nes-dialog is-dark")}
       >
         <form method="dialog">
           {title && <p class="title">{title}</p>}

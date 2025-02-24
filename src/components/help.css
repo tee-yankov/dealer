@@ -11,7 +11,7 @@
     background-color: #ffc118;
     font-size: 2em;
     padding: 0.25rem 0.5rem !important;
-    transform: translateX(1rem);
+    transform: translateX(0.5rem);
 }
 
 .help-inner-container:hover {
@@ -40,5 +40,5 @@
 
 .help-button-text {
     display: inline-block;
-    transform: translateX(-0.5rem);
+    transform: translateX(-0.35rem);
 }
