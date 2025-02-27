@@ -2,9 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "preact/hooks";
 import "./card.css";
 import classnames from "../util/classnames";
 import Shine from "./shine";
+import useExplodeAnimation from "../hooks/useExplodeAnimation";
 
-const xOffset = 142;
-const yOffset = 190;
+export const xOffset = 142;
+export const yOffset = 190;
 
 const getRandomDifferentCard = (old: number) => {
   const result = Math.round(Math.random() * 13);
@@ -49,6 +50,8 @@ export interface CardProps {
   color?: CardColor;
   small?: boolean;
   scaled?: boolean;
+  exploded?: boolean;
+  explosionDelayMs?: number;
 }
 
 function Card({
@@ -61,14 +64,26 @@ function Card({
   active = false,
   color = CardColor.Red,
   scaled = false,
+  exploded = false,
+  explosionDelayMs = 0,
 }: CardProps) {
   const [cardIndex, setCardIndex] = useState(rank);
+  const cardOffset = useMemo(
+    () => ({
+      backgroundPositionX: -cardIndex * xOffset,
+      backgroundPositionY: -color * yOffset,
+    }),
+    [cardIndex, color],
+  );
+
   useEffect(() => {
     setCardIndex(rank);
   }, [rank]);
   const [cardContainer, setCardContainer] = useState<HTMLDivElement | null>(
     null,
   );
+
+  useExplodeAnimation(exploded, cardOffset, cardContainer, explosionDelayMs);
 
   const cardRef = useCallback((ref: HTMLDivElement | null) => {
     if (ref) {
@@ -110,14 +125,6 @@ function Card({
       onClick(rank);
     }
   }, [rank, onClick, disabled]);
-
-  const cardOffset = useMemo(
-    () => ({
-      backgroundPositionX: -cardIndex * xOffset,
-      backgroundPositionY: -color * yOffset,
-    }),
-    [cardIndex, color],
-  );
 
   return (
     <div

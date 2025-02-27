@@ -12,6 +12,11 @@ export function App() {
   return (
     <>
       <Help />
+      <canvas
+        width={window.innerWidth}
+        height={window.innerHeight}
+        className="global-effect-canvas"
+      ></canvas>
       {isResolved ? <Router /> : null}
     </>
   );

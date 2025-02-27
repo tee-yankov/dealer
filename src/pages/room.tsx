@@ -115,7 +115,7 @@ function RoomPage() {
           <LayoutSlot>
             <PlayingField />
           </LayoutSlot>
-          <LayoutSlot className="layout-slot-reversed">
+          <LayoutSlot className="layout-slot-reversed" raised>
             {isRoomHost.value ? <HostControls /> : <Hand />}
           </LayoutSlot>
         </Layout>

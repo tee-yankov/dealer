@@ -21,3 +21,7 @@
 .layout-slot-overflow {
     overflow: visible;
 }
+
+.layout-slot-raised {
+    z-index: 2;
+}

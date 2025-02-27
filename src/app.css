@@ -135,3 +135,9 @@ body {
 .button-kick-member {
   margin-right: 1rem;
 }
+
+.global-effect-canvas {
+  pointer-events: none;
+  z-index: 1;
+  position: absolute;
+}

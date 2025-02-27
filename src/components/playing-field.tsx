@@ -13,11 +13,17 @@ import classnames from "../util/classnames";
 function PlayingField() {
   const { currentRound } = roundState.value;
   const memberStatus = userOnlineStatus.value;
+  const unanimouseVote =
+    currentRound?.status === RoundStatus.Ended &&
+    Object.values(currentRound.cards).every(
+      (v, _, arr) => v.card === arr[0].card,
+    );
+  console.debug({ unanimouseVote });
 
   return (
     <>
       <div className="playing-field-container">
-        {Object.entries(playerMembers.value).map(([uid, { profile }]) => {
+        {Object.entries(playerMembers.value).map(([uid, { profile }], i) => {
           const card = currentRound?.cards?.[uid]?.card;
           const name = profile?.displayName || "...";
           const character = profile?.character || "mario";
@@ -57,6 +63,8 @@ function PlayingField() {
                       rank={card}
                       flipped={currentRound?.status === RoundStatus.Started}
                       color={suit}
+                      exploded={unanimouseVote}
+                      explosionDelayMs={(i + Math.random() * 2) * 1000}
                     />
                   )}
                 </div>

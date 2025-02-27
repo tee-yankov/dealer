@@ -6,13 +6,19 @@ export function LayoutSlot({
   children,
   className,
   overflow = false,
-}: PropsWithChildren<{ className?: string; overflow?: boolean }>) {
+  raised = false,
+}: PropsWithChildren<{
+  className?: string;
+  overflow?: boolean;
+  raised?: boolean;
+}>) {
   return (
     <div
       className={classnames(
         className,
         "layout-slot",
         overflow && "layout-slot-overflow",
+        raised && "layout-slot-raised",
       )}
     >
       {children}
