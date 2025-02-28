@@ -3,8 +3,10 @@ import Router from "./components/router";
 import { initializeFirebase } from "./util/firebase";
 import { useAsync } from "./hooks/useAsync";
 import Help from "./components/help";
+import useWindowDimensions from "./hooks/useWindowDimensions";
 
 export function App() {
+  const { width, height } = useWindowDimensions();
   const { isResolved } = useAsync(() => initializeFirebase(), {
     immediate: true,
   });
@@ -13,8 +15,8 @@ export function App() {
     <>
       <Help />
       <canvas
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={width}
+        height={height}
         className="global-effect-canvas"
       ></canvas>
       {isResolved ? <Router /> : null}
