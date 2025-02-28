@@ -31,12 +31,12 @@ export enum Collections {
 }
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAbx-DqBkDScQL2K2k0eloP5SFe8txaGtM",
-  authDomain: "dealer-b7cfb.firebaseapp.com",
-  projectId: "dealer-b7cfb",
-  storageBucket: "dealer-b7cfb.firebasestorage.app",
-  messagingSenderId: "90219296431",
-  appId: "1:90219296431:web:5ce5ccf602bf005a68465a",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
