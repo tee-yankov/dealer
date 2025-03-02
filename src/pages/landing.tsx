@@ -10,7 +10,9 @@ import { authState } from "../util/state";
 import TitleText from "../components/title-text";
 
 function LandingPage() {
-  const [roomName, setRoomName] = useState("");
+  const [roomName, setRoomName] = useState(
+    localStorage.getItem("lastRoomName") ?? "",
+  );
   const [_, navigate] = useLocation();
   const [isRoomCreating, setIsRoomCreating] = useState(false);
   const disabled = !roomName || isRoomCreating;
@@ -36,6 +38,8 @@ function LandingPage() {
         name: roomName,
         uid: authState.value.user?.uid!,
       });
+
+      localStorage.setItem("lastRoomName", roomName);
 
       setIsRoomCreating(false);
 
