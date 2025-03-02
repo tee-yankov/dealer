@@ -70,16 +70,11 @@ function UploadAvatar({ onChange, label, current }: UploadAvatarProps) {
       img.width,
       img.height,
     );
-
     let quality = 1.0;
     let data = canvas.toDataURL("image/webp", quality);
     let iterations = 0;
-    while (data.length > 2000) {
-      if (iterations > 9) {
-        break;
-      }
-
-      quality /= 2;
+    while (data.length > 2000 && iterations < 10) {
+      quality -= 0.1 * quality; // Decrease quality more gradually
       data = canvas.toDataURL("image/webp", quality);
       console.log("requality image", quality, data.length);
       iterations += 1;
