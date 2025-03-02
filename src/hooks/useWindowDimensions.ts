@@ -15,10 +15,10 @@ function useWindowDimensions(): { width: number; height: number } {
       });
     }, 300);
 
-    document.addEventListener("resize", handler);
+    window.addEventListener("resize", handler);
 
     return () => {
-      document.removeEventListener("resize", handler);
+      window.removeEventListener("resize", handler);
     };
   }, []);
 

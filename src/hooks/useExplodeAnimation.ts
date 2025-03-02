@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import DeckImage from "../assets/8BitDeck.webp";
 import { xOffset, yOffset } from "../components/card";
+import useWindowDimensions from "./useWindowDimensions";
 
 function useExplodeAnimation(
   exploded: boolean = false,
@@ -9,6 +10,18 @@ function useExplodeAnimation(
   explosionDelayMs: number,
 ) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rerenderCounter, setRerenderCounter] = useState(0);
+  const dimensions = useWindowDimensions();
+
+  useEffect(() => {
+    setRerenderCounter((v) => v + 1);
+    if (canvasRef.current) {
+      canvasRef.current
+        .getContext("2d")!
+        .clearRect(0, 0, window.innerWidth, window.innerHeight);
+    }
+  }, [dimensions]);
+
   useEffect(() => {
     if (!exploded || !cardContainer) {
       return;
@@ -148,7 +161,7 @@ function useExplodeAnimation(
     };
 
     return cleanup;
-  }, [exploded, cardContainer]);
+  }, [exploded, cardContainer, rerenderCounter]);
 }
 
 export default useExplodeAnimation;
